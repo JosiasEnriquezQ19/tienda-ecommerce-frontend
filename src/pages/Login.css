@@ -446,27 +446,25 @@ html, body {
   }
   
   .ae-login-card {
-    padding: 32px 24px;
+    padding: 30px 20px;
     border-radius: 16px;
     /* Centrar el contenido del card */
     margin: 0 auto;
-    max-width: 90%;
+    max-width: 85%;
   }
   
   .ae-login-title {
     font-size: 24px;
-    text-align: center;
   }
   
   .ae-login-subtitle {
     font-size: 14px;
-    text-align: center;
   }
   
   .ae-form-options {
     flex-direction: column;
     gap: 16px;
-    align-items: center; /* Centrar elementos */
+    align-items: flex-start;
   }
   
   .ae-social-buttons {
@@ -482,31 +480,16 @@ html, body {
 
 @media (max-width: 480px) {
   .ae-login-card {
-    padding: 24px 20px;
-    /* Ajustar el tamaño y la posición en pantallas muy pequeñas */
-    width: 95%;
+    padding: 20px 15px;
+    /* Reducir el tamaño del formulario */
+    width: 80%;
+    max-width: 320px;
     margin: 70px auto 0; /* Añadir margen superior para evitar que el header lo tape */
   }
   
   .ae-form-input {
-    padding: 14px 16px;
-    font-size: 16px; /* Prevents zoom on iOS */
-    /* Centrar el texto en los inputs */
-    text-align: center;
-  }
-  
-  /* Centrar todos los elementos del formulario */
-  .ae-form-label {
-    text-align: center;
-  }
-  
-  .ae-login-button {
-    /* Asegurar que el botón esté centrado */
-    margin: 0 auto;
-  }
-  
-  .ae-signup-link {
-    text-align: center;
+    padding: 12px 14px;
+    font-size: 15px; /* Prevents zoom on iOS */
   }
 }
 .ae-signup-link a{ color:var(--ae-primary); text-decoration:none; font-weight:600 }
@@ -514,20 +497,15 @@ html, body {
 
 /* Responsive */
 @media (max-width:480px){ 
-  .ae-login-card{ 
-    padding:28px 18px; 
-    /* Ajustar espacio para que no sea tapado por el header */
-    margin-top: 80px;
-  } 
-  
   .ae-social-buttons{ 
     grid-template-columns:1fr 
   }
   
-  /* Mejorar la alineación central en dispositivos pequeños */
+  /* Centrar el formulario vertical y horizontalmente */
   .ae-login-container {
-    align-items: flex-start; /* Cambiar de center a flex-start para dar espacio arriba */
-    padding-top: 20px;
+    align-items: center; /* Centrar verticalmente */
+    justify-content: center; /* Centrar horizontalmente */
+    padding-top: 0;
     overflow-y: auto; /* Permitir scroll si el contenido es muy alto */
   }
 }
