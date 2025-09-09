@@ -47,6 +47,9 @@
   z-index: 1100;
   /* allow popovers / dropdowns to overflow the rounded card */
   overflow: visible;
+  /* No permitir que ocupe demasiado espacio en pantallas pequeñas */
+  max-height: 90vh;
+  transition: all 0.3s ease;
 }
 
 /* Barra superior - Minimalista */
@@ -572,19 +575,19 @@
 @media (max-width: 768px) {
   .ae-header-content {
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
   }
   
   .ae-search-form {
     order: 3;
     width: 100%;
-    margin-top: 16px;
+    margin-top: 12px;
     max-width: none;
   }
   
   .ae-top-links {
     justify-content: flex-start;
-    gap: 16px;
+    gap: 12px;
   }
   
   .ae-user-name {
@@ -597,32 +600,48 @@
   .ae-cart-counter { display: none; }
   
   .ae-main-bar {
-    padding: 16px 0;
+    padding: 10px 0;
   }
   
   .ae-category-select {
     width: 140px;
-    padding: 14px 16px;
+    padding: 12px 14px;
   }
   
   .ae-user-menu {
-    gap: 16px;
+    gap: 12px;
+  }
+  
+  /* Reducir el tamaño de los botones de autenticación */
+  .ae-auth-buttons .ae-login-btn,
+  .ae-auth-buttons .ae-register-btn {
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
+  /* Ajustar el header para móviles */
+  .ae-header {
+    margin: 6px auto;
+    max-width: calc(100% - 16px);
+    top: 6px;
+  }
+  
   .ae-container {
-    padding: 0 16px;
+    padding: 0 12px;
   }
   
   .ae-header-content {
-    gap: 12px;
+    gap: 8px;
   }
   
+  /* Reducir tamaño del logo */
   .ae-logo-main, .ae-logo-plus {
-    font-size: 24px;
+    font-size: 22px;
   }
   
+  /* Optimizar buscador */
   .ae-search-container {
     flex-direction: column;
     border-radius: var(--hd-radius);
@@ -635,24 +654,38 @@
   
   .ae-search-input {
     border-radius: 0;
+    padding: 12px 16px;
   }
   
   .ae-search-button {
     border-radius: 0 0 var(--hd-radius) var(--hd-radius);
-    padding: 14px 24px;
+    padding: 12px 20px;
   }
   
+  /* Optimizar menú de autenticación */
   .ae-auth-buttons {
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    gap: 6px;
   }
   
   .ae-auth-buttons .ae-login-btn,
   .ae-auth-buttons .ae-register-btn {
-    padding: 10px 16px;
+    padding: 6px 10px;
     text-align: center;
+    font-size: 13px;
   }
   
+  /* Reducir tamaño del botón del carrito */
+  .ae-cart {
+    padding: 8px 12px;
+  }
+  
+  .ae-cart-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Optimizar footer */
   .ae-footer-content {
     flex-direction: column;
     gap: 16px;
@@ -661,6 +694,15 @@
   
   .ae-footer-links {
     gap: 16px;
+  }
+  
+  /* Reducir el espacio vertical que ocupa el header */
+  .ae-main-bar {
+    padding: 8px 0;
+  }
+  
+  .ae-top-bar {
+    padding: 4px 0;
   }
 }
 
