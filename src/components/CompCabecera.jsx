@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
 import { CartContext } from '../carrito/ContextoCarrito';
 import { useContext as useCtx } from 'react'
@@ -10,7 +10,39 @@ export default function CompCabecera({ totalProductos = 0 }) {
   const { user, logout } = useContext(AuthContext);
   const { items } = useContext(CartContext)
   const [pulseCount, setPulseCount] = useState(false)
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const location = useLocation();
   const totalProductosCount = Array.isArray(items) ? items.reduce((s, it) => s + (Number(it.cantidad) || 0), 0) : 0
+  
+  // Efecto para controlar la visibilidad del header al hacer scroll
+  useEffect(() => {
+    const controlHeader = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Si estamos en la página principal, aplicamos el comportamiento de ocultar al hacer scroll down
+      if (location.pathname === '/' || location.pathname === '/productos') {
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          // Scroll hacia abajo y más de 100px - ocultamos el header
+          setHeaderVisible(false);
+        } else {
+          // Scroll hacia arriba - mostramos el header
+          setHeaderVisible(true);
+        }
+      } else {
+        // En otras páginas, siempre mostramos el header
+        setHeaderVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+    
+    window.addEventListener('scroll', controlHeader);
+    
+    return () => {
+      window.removeEventListener('scroll', controlHeader);
+    };
+  }, [lastScrollY, location.pathname]);
 
   useEffect(() => {
     // trigger a small pop animation when the cart count changes
@@ -50,7 +82,7 @@ export default function CompCabecera({ totalProductos = 0 }) {
   const handleSearch = (e) => { e.preventDefault(); /* no navigation; search is live */ }
 
   return (
-    <header className="ae-header">
+    <header className={`ae-header ${headerVisible ? '' : 'ae-header-hidden'}`}>
       {/* Barra superior */}
       <div className="ae-top-bar">
         <div className="ae-container">

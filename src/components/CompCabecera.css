@@ -49,7 +49,14 @@
   overflow: visible;
   /* No permitir que ocupe demasiado espacio en pantallas pequeñas */
   max-height: 90vh;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+}
+
+/* Clase para ocultar el header al hacer scroll */
+.ae-header-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  margin-top: -100px;
 }
 
 /* Barra superior - Minimalista */
