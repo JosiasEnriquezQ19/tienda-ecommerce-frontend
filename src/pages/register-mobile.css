@@ -10,12 +10,14 @@
   position: absolute;
   top: -7px;
   left: 10px;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
   padding: 0 5px;
   border-radius: 4px;
   z-index: 1;
   color: #666;
   font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .compact-form .ae-form-input {
@@ -35,25 +37,47 @@
 @media (max-width: 480px) {
   /* Scroll vertical para formularios muy largos */
   .ae-login-container {
-    align-items: flex-start;
-    padding-top: 70px;
+    align-items: center; /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
+    padding-top: 70px; /* Espacio para el header */
+    padding-bottom: 20px;
     overflow-y: auto;
-    height: 100%;
+    min-height: calc(100vh - 60px); /* Altura completa menos el header */
   }
   
   .ae-login-card {
-    margin-bottom: 20px;
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
+    margin: 0 auto; /* Centrar el card */
+    overflow-y: visible; /* Permitir que el contenido fluya naturalmente */
+    max-height: none; /* Eliminar límite de altura */
   }
   
   /* Reducir el espacio del título */
   .ae-login-title {
     margin-top: 0;
+    font-size: 20px;
+  }
+  
+  .ae-login-subtitle {
+    font-size: 13px;
+    margin-bottom: 16px;
   }
   
   /* Optimizar los espacios de los inputs */
   .compact-form .ae-form-input::placeholder {
+    font-size: 13px;
+  }
+  
+  /* Optimización adicional para el formulario de registro */
+  .compact-form .ae-form-group {
+    margin-bottom: 14px;
+  }
+  
+  .compact-form .ae-terms-checkbox {
+    margin: 10px 0;
+  }
+  
+  .compact-form .ae-signup-link {
+    margin-top: 10px;
     font-size: 13px;
   }
 }
