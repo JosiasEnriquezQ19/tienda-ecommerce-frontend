@@ -161,12 +161,6 @@ export default function Registro() {
   return (
     <div className="ae-login-container">
       <div className="ae-login-card">
-        {/* Logo */}
-        <div className="ae-login-logo">
-          <span className="ae-logo-main">Tienda</span>
-          <span className="ae-logo-plus">+</span>
-        </div>
-        
         <h1 className="ae-login-title">Crear cuenta</h1>
         <p className="ae-login-subtitle">Únete a nosotros y disfruta de beneficios exclusivos</p>
         

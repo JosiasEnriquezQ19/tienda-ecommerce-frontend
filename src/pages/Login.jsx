@@ -29,12 +29,6 @@ export default function Login() {
   return (
     <div className="ae-login-container">
       <div className="ae-login-card">
-        {/* Logo */}
-        <div className="ae-login-logo">
-          <span className="ae-logo-main">Tienda</span>
-          <span className="ae-logo-plus">+</span>
-        </div>
-
         <h2 className="ae-login-title">Iniciar sesión</h2>
         <p className="ae-login-subtitle">Ingresa tus credenciales para acceder a tu cuenta</p>
 

@@ -1,0 +1,39 @@
+.simple-header {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 15px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.simple-header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.simple-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.simple-logo:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .simple-header {
+    padding: 10px 0;
+  }
+  
+  .simple-header-container {
+    padding: 0 16px;
+  }
+}

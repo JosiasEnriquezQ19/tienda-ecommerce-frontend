@@ -35,12 +35,22 @@ window.addEventListener('unhandledrejection', (ev)=>{
   showFatalError('Unhandled promise rejection', ev.reason)
 })
 
+// Importamos el nuevo AuthLayout para las páginas de autenticación
+import AuthLayout from './AuthLayout'
+
 try{
   createRoot(document.getElementById('root')).render(
     <React.StrictMode>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Rutas de autenticación con un diseño simplificado */}
+            <Route path="/" element={<AuthLayout />}>
+              <Route path="login" element={<Login />} />
+              <Route path="registro" element={<Registro />} />
+            </Route>
+            
+            {/* Rutas principales con el diseño completo */}
             <Route path="/" element={<App />}>
               <Route index element={<ListaProductos />} />
               <Route path="producto/:id" element={<DetalleProducto />} />
@@ -48,8 +58,6 @@ try{
               <Route path="pago" element={<Pago />} />
               <Route path="pago-qr" element={<PagoQR />} />
               <Route path="perfil" element={<PefilUsuario />} />
-              <Route path="login" element={<Login />} />
-              <Route path="registro" element={<Registro />} />
               {/* Admin panel removed */}
               <Route path="pedidos" element={<MisPedidos />} />
               <Route path="pedidos/:id" element={<DetallePedido />} />

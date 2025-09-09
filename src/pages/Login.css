@@ -49,8 +49,8 @@ html, body {
   padding: 24px;
   margin: 0 !important;
   z-index: 1;
-  /* Asegurar que siempre está por debajo del header */
-  z-index: 900; /* El header tiene z-index 1000 */
+  /* Dejar espacio para el SimpleHeader */
+  padding-top: 60px;
   
   /* 🎨 OPCIONES DE FONDO - Descomenta la que prefieras */
   
