@@ -1,0 +1,109 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SimpleMarketplace.Api.Data;
+using SimpleMarketplace.Api.DTOs;
+using SimpleMarketplace.Api.Entities;
+
+namespace SimpleMarketplace.Api.Controllers
+{
+    [ApiController]
+    [Route("api/productos/{productoId}/[controller]")]
+    public class ComentariosController : ControllerBase
+    {
+        private readonly ApplicationDbContext _db;
+        private readonly IMapper _mapper;
+
+        public ComentariosController(ApplicationDbContext db, IMapper mapper)
+        {
+            _db = db;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(int productoId)
+        {
+            var exists = await _db.Productos.AnyAsync(p => p.ProductoId == productoId);
+            if (!exists) return NotFound();
+
+            var list = await _db.Comentarios
+                .AsNoTracking()
+                .Where(c => c.ProductoId == productoId)
+                .OrderByDescending(c => c.FechaComentario)
+                .ToListAsync();
+
+            return Ok(list.Select(c => _mapper.Map<ComentarioDto>(c)));
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Create(int productoId, [FromBody] CrearComentarioDto dto)
+        {
+            if (dto.Estrellas < 1 || dto.Estrellas > 5) return BadRequest(new { message = "Estrellas debe estar entre 1 y 5" });
+
+            var producto = await _db.Productos.FindAsync(productoId);
+            if (producto == null) return NotFound(new { message = "Producto no encontrado" });
+
+            // obtener usuarioId desde claims (asume claim "usuarioId" existe)
+            var claim = User.FindFirst("usuarioId")?.Value;
+            if (claim == null) return Unauthorized();
+            if (!int.TryParse(claim, out var usuarioId)) return Unauthorized();
+
+            var entidad = _mapper.Map<Comentario>(dto);
+            entidad.ProductoId = productoId;
+            entidad.UsuarioId = usuarioId;
+            entidad.FechaComentario = DateTime.UtcNow;
+
+            _db.Comentarios.Add(entidad);
+            await _db.SaveChangesAsync();
+
+            var result = _mapper.Map<ComentarioDto>(entidad);
+            return CreatedAtAction(nameof(GetAll), new { productoId = productoId }, result);
+        }
+
+        [HttpPut("/api/comentarios/{comentarioId}")]
+        [Authorize]
+        public async Task<IActionResult> Update(int comentarioId, [FromBody] UpdateComentarioDto dto)
+        {
+            var c = await _db.Comentarios.FindAsync(comentarioId);
+            if (c == null) return NotFound();
+
+            var claim = User.FindFirst("usuarioId")?.Value;
+            if (claim == null) return Unauthorized();
+            if (!int.TryParse(claim, out var usuarioId)) return Unauthorized();
+
+            if (c.UsuarioId != usuarioId) return Forbid();
+
+            if (dto.Texto != null) c.Texto = dto.Texto;
+            if (dto.Estrellas.HasValue)
+            {
+                if (dto.Estrellas < 1 || dto.Estrellas > 5) return BadRequest(new { message = "Estrellas debe estar entre 1 y 5" });
+                c.Estrellas = dto.Estrellas.Value;
+            }
+
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("/api/comentarios/{comentarioId}")]
+        [Authorize]
+        public async Task<IActionResult> Delete(int comentarioId)
+        {
+            var c = await _db.Comentarios.FindAsync(comentarioId);
+            if (c == null) return NotFound();
+
+            var claim = User.FindFirst("usuarioId")?.Value;
+            if (claim == null) return Unauthorized();
+            if (!int.TryParse(claim, out var usuarioId)) return Unauthorized();
+
+            // permitir al autor o admin (asume claim role)
+            var role = User.FindFirst("role")?.Value;
+            if (c.UsuarioId != usuarioId && role != "admin") return Forbid();
+
+            _db.Comentarios.Remove(c);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+    }
+}

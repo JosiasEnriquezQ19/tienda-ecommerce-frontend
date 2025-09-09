@@ -1,0 +1,169 @@
+ /* Variables de color - Esquema azul actualizado */
+:root {
+  --ae-primary: #3b82f6;
+  --ae-primary-dark: #1d4ed8;
+  --ae-text: #1f2937;
+  --ae-text-light: #6b7280;
+  --ae-border: #e5e7eb;
+  --ae-bg-light: #f8fafc;
+  --ae-white: #ffffff;
+}
+
+/* Estilos generales del footer */
+.ae-footer {
+  background-color: var(--ae-white);
+  padding: 40px 0 20px;
+  margin-top: 60px;
+  font-family: 'Arial', sans-serif;
+}
+
+.ae-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Sección superior */
+.ae-footer-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.ae-footer-section {
+  margin-bottom: 20px;
+}
+
+.ae-footer-title {
+  color: var(--ae-text);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.ae-footer-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background-color: var(--ae-primary);
+}
+
+.ae-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ae-footer-links li {
+  margin-bottom: 10px;
+}
+
+.ae-footer-links a {
+  color: var(--ae-text-light);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.ae-footer-links a:hover {
+  color: var(--ae-primary);
+}
+
+/* Métodos de pago */
+.ae-payment-methods {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.ae-payment-methods img {
+  height: 24px;
+  width: auto;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.ae-payment-methods img:hover {
+  opacity: 1;
+}
+
+/* Redes sociales */
+.ae-social-media {
+  display: flex;
+  gap: 15px;
+}
+
+.ae-social-media a {
+  color: var(--ae-text-light);
+  font-size: 18px;
+  transition: color 0.2s;
+}
+
+.ae-social-media a:hover {
+  color: var(--ae-primary);
+}
+
+/* Iconos (puedes usar una librería de iconos o SVG) */
+.ae-icon-facebook::before { content: 'f'; font-family: 'Arial'; font-weight: bold; }
+.ae-icon-twitter::before { content: 't'; font-family: 'Arial'; font-weight: bold; }
+.ae-icon-instagram::before { content: '📷'; }
+
+/* Divisor */
+.ae-footer-divider {
+  height: 1px;
+  background-color: var(--ae-border);
+  margin: 20px 0;
+}
+
+/* Sección inferior */
+.ae-footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.ae-copyright {
+  color: var(--ae-text-light);
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+.ae-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.ae-legal-links a {
+  color: var(--ae-text-light);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.ae-legal-links a:hover {
+  color: var(--ae-primary);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .ae-footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+  
+  .ae-copyright {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,9 @@
+/* Estilos mínimos para AdminProductos */
+.ae-admin-container { padding: 20px; }
+.ae-admin-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
+.ae-primary-button { background:#007bff; color:#fff; border:none; padding:8px 12px; border-radius:6px; text-decoration:none }
+.ae-products-table { width:100%; border-collapse:collapse }
+.ae-products-table th, .ae-products-table td { padding:8px; border-bottom:1px solid #eee }
+.ae-action-btn { margin-right:8px }
+.ae-admin-denied { padding:40px; text-align:center }
+.ae-admin-login-btn { display:inline-block; margin-top:12px; padding:8px 12px; background:#333; color:#fff; border-radius:6px; text-decoration:none }

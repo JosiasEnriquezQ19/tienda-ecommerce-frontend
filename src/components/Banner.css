@@ -1,0 +1,268 @@
+/* Estilos generales del banner */
+.ae-banner {
+  /* Use app primary gradient so banner matches the "Registrarse" button */
+  background: linear-gradient(135deg, var(--hd-primary) 0%, var(--hd-primary-dark) 100%);
+  /* translucent overlay using the primary color at low opacity for a frosted look */
+  background-color: rgba(59,130,246,0.18);
+  color: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(2,32,54,0.12);
+  margin: 20px auto;
+  max-width: 1200px;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  transform: translateY(6px);
+  animation: bannerSlideIn 720ms cubic-bezier(.22,.9,.3,1) both;
+}
+
+.ae-banner-container {
+  padding: 24px;
+}
+
+.ae-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Estilos del texto */
+.ae-banner-text {
+  flex: 1;
+  padding-right: 28px;
+  z-index: 2;
+  will-change: transform, opacity;
+  color: #ffffff;
+}
+
+.ae-banner-subtitle {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  transition: transform 420ms cubic-bezier(.2,.9,.3,1), box-shadow 420ms;
+}
+
+/* Subhead container and animated decor */
+.ae-banner-subhead{ display:flex; align-items:center; gap:10px }
+.ae-banner-decor{ display:flex; gap:8px; align-items:center }
+.ae-banner-decor .dot{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.22); box-shadow: 0 6px 18px rgba(4,46,60,0.05); }
+.ae-banner-decor .d1{ transform: translateY(0); animation: floaty 4.4s cubic-bezier(.2,.9,.2,1) infinite }
+.ae-banner-decor .d2{ transform: translateY(0); animation: floaty 4.8s cubic-bezier(.2,.9,.2,1) .2s infinite }
+.ae-banner-decor .d3{ transform: translateY(0); animation: floaty 5.2s cubic-bezier(.2,.9,.2,1) .4s infinite }
+@keyframes floaty{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-8px) } 100%{ transform: translateY(0) } }
+
+/* Title shimmer */
+.ae-banner-title{ position:relative; overflow:visible; color: #ffffff; font-weight:700 }
+.ae-banner-title::after{ content:''; position:absolute; left:-30%; top:0; width:22%; height:100%; background:linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.18), rgba(255,255,255,0.05)); transform: skewX(-14deg); animation: titleShimmer 3200ms linear infinite }
+@keyframes titleShimmer{ 0%{ left:-50% } 100%{ left:160% } }
+
+/* Description fade and subtle upward motion */
+.ae-banner-description{ transform: translateY(6px); opacity:0; color: rgba(255,255,255,0.9); animation: descIn 880ms cubic-bezier(.2,.9,.3,1) forwards 240ms }
+@keyframes descIn{ to { transform: translateY(0); opacity:0.95 } }
+
+/* CTA micro interactions */
+.ae-banner-button{ transition: transform .26s cubic-bezier(.2,.9,.3,1), box-shadow .26s; background: rgba(255,255,255,0.92); color: #034b6b }
+.ae-banner-button:active{ transform: translateY(1px) scale(.995) }
+.ae-banner-button .ae-arrow-icon{ transition: transform .28s cubic-bezier(.2,.9,.3,1) }
+.ae-banner-button:hover .ae-arrow-icon{ transform: translateX(6px) }
+
+/* subtle background shapes */
+.ae-banner::before, .ae-banner::after{ content:''; position:absolute; pointer-events:none }
+.ae-banner::before{ right:-80px; top:-40px; width:260px; height:260px; background: radial-gradient(circle at 30% 30%, rgba(59,130,246,0.22), rgba(59,130,246,0)); transform: rotate(12deg); filter: blur(18px) }
+.ae-banner::after{ left:-60px; bottom:-40px; width:200px; height:200px; background: radial-gradient(circle at 60% 60%, rgba(59,130,246,0.14), rgba(59,130,246,0)); filter: blur(24px) }
+
+.ae-banner-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+.ae-banner-description {
+  font-size: 16px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+  max-width: 80%;
+}
+
+/* Estilos del temporizador */
+.ae-banner-timer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.ae-banner-timer span {
+  margin-right: 12px;
+}
+
+.ae-timer {
+  display: flex;
+  gap: 4px;
+}
+
+.ae-timer-box {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+/* Estilos del botón */
+.ae-banner-button {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  color: #1d4ed8;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ae-banner-button:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Glowing CTA */
+.ae-banner-button { position: relative; overflow: visible }
+.ae-banner-button::after{
+  content:''; position:absolute; inset: -6px; border-radius: 12px; z-index:-1; background: radial-gradient(closest-side, rgba(14,165,219,0.18), rgba(2,6,23,0)); opacity:0; transition: opacity .25s ease;
+}
+.ae-banner-button:hover::after{ opacity:1 }
+
+/* Image shimmer */
+.ae-product-image{ position: relative; overflow: hidden; transition: transform 420ms cubic-bezier(.2,.9,.3,1) }
+.ae-product-image::after{ content:''; position:absolute; left:-40%; top:0; width:40%; height:100%; background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.14), rgba(255,255,255,0.04)); transform: skewX(-16deg); animation: shimmer 3200ms linear infinite; pointer-events:none }
+
+@keyframes shimmer{ 0% { left:-70% } 100% { left:150% } }
+
+.ae-arrow-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+  stroke: var(--hd-primary-dark);
+  stroke-width: 2;
+}
+
+/* Estilos de la imagen */
+.ae-banner-image {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ae-product-image {
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.ae-price-tag {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ae-old-price {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.ae-new-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ae-banner-content {
+    flex-direction: column;
+  }
+  
+  .ae-banner-text {
+    padding-right: 0;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  .ae-banner-description {
+    max-width: 100%;
+  }
+  
+  .ae-banner-timer {
+    justify-content: center;
+  }
+}
+
+/* Countdown animation and styling enhancements */
+.ae-banner-with-countdown { position: relative; }
+.ae-banner-timer { display:flex; align-items:center; gap:12px }
+.ae-termina { font-weight:600; opacity:0.95 }
+.ae-animated-timer { display:flex; align-items:center; gap:8px }
+.ae-timer-segment { display:flex; flex-direction:column; align-items:center }
+.ae-timer-segment small{ font-size:10px; color: rgba(255,255,255,0.9); margin-top:4px }
+.ae-colon{ font-size:20px; font-weight:800; opacity:0.95 }
+.ae-timer-box { background: rgba(255,255,255,0.12); padding: 8px 10px; border-radius:8px; font-family: monospace; font-weight:800; min-width:48px; text-align:center; color: #fff }
+
+/* subtle pulse for seconds */
+.ae-digit.animated { transform-origin: center; transition: transform 160ms ease-out }
+.ae-digit.pulse { animation: ae-pulse 1s infinite cubic-bezier(.2,.8,.2,1) }
+
+/* flip when value changes */
+.ae-timer-box.flip { animation: digitFlip 420ms cubic-bezier(.2,.9,.3,1) }
+@keyframes digitFlip{
+  0% { transform: rotateX(0deg) }
+  50% { transform: rotateX(-90deg) }
+  100% { transform: rotateX(0deg) }
+}
+
+@keyframes ae-pulse {
+  0% { transform: scale(1) }
+  50% { transform: scale(1.06) }
+  100% { transform: scale(1) }
+}
+
+/* glow entrance */
+.ae-timer-box { box-shadow: 0 6px 16px rgba(2,6,23,0.15), inset 0 -6px 18px rgba(255,255,255,0.02) }
+
+@media (max-width: 520px){
+  .ae-timer-box{ min-width:72px }
+}
+
+@keyframes bannerSlideIn{ from { opacity:0; transform: translateY(18px) scale(.995) } to { opacity:1; transform: translateY(0) scale(1) } }
+
+/* gentle 3D parallax on hover for desktop */
+.ae-banner:hover{ transform: translateY(0) translateZ(0) scale(1.007); box-shadow: 0 32px 60px rgba(6,22,39,0.09) }
+.ae-banner:hover .ae-product-image{ transform: translateY(-6px) scale(1.02) }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ae-banner, .ae-banner-title::after, .ae-product-image::after, .ae-banner-decor .dot, .ae-timer-box.flip { animation: none !important; transition: none !important }
+}

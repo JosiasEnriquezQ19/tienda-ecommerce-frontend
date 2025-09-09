@@ -1,0 +1,113 @@
+/* Elegant floating modal for "added to cart" feedback */
+.ae-added-modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(10,11,12,0.45);
+  backdrop-filter: blur(6px) saturate(120%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.ae-added-modal{
+  width: min(720px, 94%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,250,0.96));
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.35);
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  align-items: center;
+}
+
+.ae-added-body{
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.ae-added-image img{
+  width: 110px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.ae-added-image .ae-placeholder{
+  width: 110px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6, #e9eef8);
+  color: #666;
+  border-radius: 8px;
+}
+
+.ae-added-content h3{
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  color: #0b1220;
+}
+
+.ae-added-name{
+  margin: 0;
+  font-weight: 600;
+  color: #162133;
+}
+
+.ae-added-price{
+  margin: 6px 0 0 0;
+  color: #0b5a23;
+  font-weight: 700;
+}
+
+.ae-added-actions{
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.ae-view-cart{
+  background: #111827;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ae-continue{
+  background: transparent;
+  border: 1px solid rgba(16,24,40,0.08);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #111827;
+  cursor: pointer;
+}
+
+.ae-modal-close{
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #354155;
+  cursor: pointer;
+}
+
+/* small screens */
+@media (max-width: 520px){
+  .ae-added-modal{ padding: 12px; }
+  .ae-added-body{ flex-direction: column; align-items: stretch }
+  .ae-added-image img{ width: 100%; height: 160px }
+  .ae-added-image .ae-placeholder{ height: 160px }
+  .ae-added-content{ text-align: center }
+  .ae-added-actions{ justify-content: center }
+}

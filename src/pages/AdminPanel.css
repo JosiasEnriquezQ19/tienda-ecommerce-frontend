@@ -1,0 +1,18 @@
+/* Estilos mínimos para AdminPanel y AdminLayout */
+.ae-admin-layout { font-family: Arial, sans-serif; }
+.ae-admin-topbar { background:#f8f9fa; border-bottom:1px solid #e6e6e6; padding:12px 20px; display:flex; justify-content:space-between; align-items:center }
+.ae-admin-topnav a { margin-right:12px; color:#333; text-decoration:none }
+.ae-admin-main { padding:20px }
+.ae-admin-container { padding:20px }
+.ae-admin-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px }
+.ae-admin-title { margin:0 }
+.ae-admin-actions { display:flex; gap:8px }
+.ae-primary-button { background:#007bff; color:#fff; border:none; padding:8px 12px; border-radius:6px; text-decoration:none }
+.ae-stat-card { display:inline-block; width:30%; padding:12px; background:#fff; border:1px solid #eee; margin-right:1%; box-sizing:border-box }
+.ae-products-table, .ae-products-table th, .ae-products-table td { border-collapse:collapse }
+.ae-products-table th, .ae-products-table td { padding:8px; border-bottom:1px solid #eee }
+.ae-admin-denied { padding:40px; text-align:center }
+.ae-denied-content { display:inline-block; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.05) }
+.ae-admin-login-btn { display:inline-block; margin-top:12px; padding:8px 12px; background:#333; color:#fff; border-radius:6px; text-decoration:none }
+.ae-loading { text-align:center; padding:20px }
+.ae-error { color:#c00; background:#fff0f0; padding:12px; border-radius:6px }

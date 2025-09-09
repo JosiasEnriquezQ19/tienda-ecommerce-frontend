@@ -1,0 +1,529 @@
+/* Improved Login and Registration CSS */
+:root {
+  --ae-primary: #ff4f4f;
+  --ae-primary-dark: #e04545;
+  --ae-accent: #1e40af;
+  --ae-text: #1f2937;
+  --ae-text-light: #6b7280;
+  --ae-border: #e2e8f0;
+  --ae-bg-light: #f8fafc;
+  --ae-white: #ffffff;
+  --ae-error: #ef4444;
+  --ae-success: #10b981;
+  --ae-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ====== ELIMINACIÓN COMPLETA DEL ESPACIO BLANCO ====== */
+/* Reset total para auth pages */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  overflow-x: hidden;
+}
+
+/* Eliminar espacios del contenedor raíz */
+#root {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* Eliminar espacios del app */
+.app {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* Layout - Contenedor que toma toda la pantalla */
+.ae-login-container {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  margin: 0 !important;
+  z-index: 1;
+  
+  /* 🎨 OPCIONES DE FONDO - Descomenta la que prefieras */
+  
+  /* Opción 1: Tecnología moderna (ACTIVA) */
+  background: 
+    linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%),
+    url('https://i0.wp.com/intercompras.com/blog/wp-content/uploads/2023/10/null-35.jpeg?fit=2048%2C1365&ssl=1') center/cover;
+  
+  /* Opción 2: E-commerce/Shopping */
+  /* background: 
+    linear-gradient(135deg, rgba(255, 79, 79, 0.85) 0%, rgba(224, 69, 69, 0.85) 100%),
+    url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover; */
+  
+  /* Opción 3: Oficina moderna */
+  /* background: 
+    linear-gradient(135deg, rgba(67, 56, 202, 0.8) 0%, rgba(139, 69, 19, 0.8) 100%),
+    url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80') center/cover; */
+  
+  /* Opción 4: Abstracto colorido */
+  /* background: 
+    linear-gradient(135deg, rgba(236, 72, 153, 0.8) 0%, rgba(239, 68, 68, 0.8) 100%),
+    url('https://images.unsplash.com/photo-1557683316-973673baf926?ixlib=rb-4.0.3&auto=format&fit=crop&w=1915&q=80') center/cover; */
+  
+  /* Opción 5: Solo degradado (sin imagen) */
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  
+  /* Opción 6: Imagen local (coloca tu imagen en /public/images/) */
+  /* background: 
+    linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%),
+    url('/images/tu-imagen.jpg') center/cover; */
+  
+  background-attachment: fixed;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ae-login-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 
+    var(--ae-shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Logo - Better positioning */
+.ae-login-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.ae-logo-main {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ae-accent);
+  letter-spacing: -1px;
+}
+
+.ae-logo-plus {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ae-primary);
+  margin-left: 2px;
+}
+
+/* Titles - Better spacing */
+.ae-login-title {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 8px 0;
+  color: var(--ae-text);
+  letter-spacing: -0.5px;
+}
+
+.ae-login-subtitle {
+  font-size: 16px;
+  color: var(--ae-text-light);
+  text-align: center;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+}
+
+/* Error and Success messages */
+.ae-login-error, .ae-login-success {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ae-login-error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+  color: var(--ae-error);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.ae-login-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+  color: var(--ae-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.ae-login-error svg, .ae-login-success svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Form - Better spacing and alignment */
+.ae-login-form {
+  margin-bottom: 32px;
+}
+
+.ae-form-group {
+  margin-bottom: 20px;
+}
+
+.ae-form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--ae-text);
+  letter-spacing: 0.02em;
+}
+
+.ae-form-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--ae-border);
+  border-radius: 12px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.ae-form-input:focus {
+  outline: none;
+  border-color: var(--ae-primary);
+  box-shadow: 0 0 0 3px rgba(255, 79, 79, 0.1);
+  background: var(--ae-white);
+}
+
+.ae-form-input::placeholder {
+  color: var(--ae-text-light);
+  opacity: 0.7;
+}
+
+/* Form options - Better layout */
+.ae-form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0;
+  font-size: 14px;
+}
+
+.ae-remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ae-text-light);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ae-remember-me input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ae-primary);
+  cursor: pointer;
+}
+
+.ae-forgot-password {
+  color: var(--ae-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.ae-forgot-password:hover {
+  color: var(--ae-primary-dark);
+  text-decoration: underline;
+}
+
+/* Button - Much better design */
+.ae-login-button {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, var(--ae-primary), var(--ae-primary-dark));
+  color: var(--ae-white);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(255, 79, 79, 0.3);
+}
+
+.ae-login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 79, 79, 0.4);
+}
+
+.ae-login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ae-login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ae-spinner {
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+.ae-spinner circle {
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 80;
+  stroke-dashoffset: 60;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Social login - Better divider */
+.ae-social-login {
+  margin: 32px 0;
+}
+
+.ae-divider {
+  display: flex;
+  align-items: center;
+  color: var(--ae-text-light);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.ae-divider::before,
+.ae-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ae-border), transparent);
+}
+
+.ae-divider::before {
+  margin-right: 16px;
+}
+
+.ae-divider::after {
+  margin-left: 16px;
+}
+
+.ae-social-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ae-social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 2px solid var(--ae-border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--ae-white);
+  transition: all 0.3s ease;
+}
+
+.ae-social-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ae-google {
+  color: #4285f4;
+  border-color: #4285f4;
+}
+
+.ae-facebook {
+  color: #3b5998;
+  border-color: #3b5998;
+}
+
+/* Signup link - Better styling */
+.ae-signup-link {
+  text-align: center;
+  font-size: 16px;
+  color: var(--ae-text-light);
+  line-height: 1.6;
+}
+
+.ae-signup-link a {
+  color: var(--ae-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.ae-signup-link a:hover {
+  color: var(--ae-primary-dark);
+  text-decoration: underline;
+}
+
+/* Form row for side-by-side inputs */
+.ae-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Terms checkbox styling */
+.ae-terms-checkbox {
+  margin: 24px 0;
+}
+
+.ae-terms-checkbox .ae-remember-me {
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.ae-terms-checkbox .ae-remember-me span {
+  font-size: 14px;
+}
+
+.ae-terms-checkbox a {
+  color: var(--ae-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.ae-terms-checkbox a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .ae-login-container {
+    padding: 16px;
+  }
+  
+  .ae-login-card {
+    padding: 32px 24px;
+    border-radius: 16px;
+  }
+  
+  .ae-login-title {
+    font-size: 24px;
+  }
+  
+  .ae-login-subtitle {
+    font-size: 14px;
+  }
+  
+  .ae-form-options {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .ae-social-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Form row responsive */
+  .ae-form-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ae-login-card {
+    padding: 24px 20px;
+  }
+  
+  .ae-form-input {
+    padding: 14px 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+.ae-signup-link a{ color:var(--ae-primary); text-decoration:none; font-weight:600 }
+.ae-signup-link a:hover{ text-decoration:underline }
+
+/* Responsive */
+@media (max-width:480px){ .ae-login-card{ padding:28px 18px } .ae-social-buttons{ grid-template-columns:1fr } }
+
+/* ====== SOLO ELIMINAR EL ESPACIO BLANCO DEL HEADER ====== */
+/* Hacer que el header no tenga espacio arriba */
+.app header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(15px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1) !important;
+  margin-top: 0 !important;
+  position: relative;
+  z-index: 1000;
+}
+
+/* Eliminar espacios específicos que causan el hueco blanco */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#root {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Mejorar legibilidad del texto del header */
+.app header h1,
+.app header nav a {
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Ajustar padding normal para el contenido */
+.ae-login-container {
+  padding-top: 24px;
+}
+
+/* En dispositivos móviles, mantener padding normal */
+@media (max-width: 768px) {
+  .ae-login-container {
+    padding-top: 24px;
+  }
+}

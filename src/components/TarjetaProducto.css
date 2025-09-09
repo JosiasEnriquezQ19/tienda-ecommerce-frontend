@@ -1,0 +1,10 @@
+.producto-card { position: relative; overflow: hidden; }
+.producto-body .precio { font-weight: 700; color: #ff6a00; margin-bottom: 6px; }
+.rating { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: #374151; }
+.rating-stars { display: inline-block; line-height: 1; }
+.star { font-size: 1rem; margin-right: 2px; display: inline-block; }
+.star.full { color: #f59e0b; }
+.star.half { color: #f59e0b; position: relative; }
+.star.half::after { content: '★'; color: rgba(0,0,0,0.12); position: absolute; left: 0; width: 50%; overflow: hidden; }
+.star.empty { color: #d1d5db; }
+.rating-value { font-size: 0.9rem; color: #6b7280; }

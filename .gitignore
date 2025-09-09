@@ -1,0 +1,29 @@
+# Node.js dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Build files
+/dist
+/.cache
+/.parcel-cache
+
+# Environment variables (except production example)
+.env
+.env.local
+.env.development
+.env.test
+# DO NOT ignore .env.production (we need it for deployment)
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
