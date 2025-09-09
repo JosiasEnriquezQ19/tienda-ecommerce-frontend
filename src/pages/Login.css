@@ -188,6 +188,13 @@ html, body {
   margin-bottom: 32px;
 }
 
+/* Compact registration form */
+@media (max-width: 480px) {
+  .ae-login-form {
+    margin-bottom: 20px;
+  }
+}
+
 .ae-form-group {
   margin-bottom: 20px;
 }
@@ -480,16 +487,62 @@ html, body {
 
 @media (max-width: 480px) {
   .ae-login-card {
-    padding: 20px 15px;
+    padding: 18px 15px;
     /* Reducir el tamaño del formulario */
-    width: 80%;
+    width: 85%;
     max-width: 320px;
-    margin: 70px auto 0; /* Añadir margen superior para evitar que el header lo tape */
+    margin: 60px auto 0; /* Añadir margen superior para evitar que el header lo tape */
   }
   
   .ae-form-input {
-    padding: 12px 14px;
+    padding: 10px 12px;
     font-size: 15px; /* Prevents zoom on iOS */
+  }
+  
+  /* Optimización para formulario de registro en móvil */
+  .ae-login-title {
+    font-size: 22px;
+    margin-bottom: 5px;
+  }
+  
+  .ae-login-subtitle {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  
+  .ae-form-group {
+    margin-bottom: 14px;
+  }
+  
+  .ae-form-label {
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  
+  /* Hacer el formulario más compacto en registro */
+  .ae-terms-checkbox {
+    margin: 14px 0;
+  }
+  
+  .ae-terms-checkbox .ae-remember-me {
+    font-size: 12px;
+  }
+  
+  .ae-terms-checkbox .ae-remember-me input {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Botón más pequeño en móvil */
+  .ae-login-button {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+  
+  /* Ajustes para el signup link */
+  .ae-signup-link {
+    font-size: 14px;
+    margin-top: 15px;
   }
 }
 .ae-signup-link a{ color:var(--ae-primary); text-decoration:none; font-weight:600 }

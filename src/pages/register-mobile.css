@@ -1,0 +1,59 @@
+/* Estilos específicos para el formulario de registro en dispositivos móviles */
+.compact-form .ae-form-group {
+  margin-bottom: 10px; /* Reducir el espacio entre grupos */
+  position: relative;
+}
+
+.compact-form .ae-form-label {
+  font-size: 11px;
+  margin-bottom: 0;
+  position: absolute;
+  top: -7px;
+  left: 10px;
+  background-color: white;
+  padding: 0 5px;
+  border-radius: 4px;
+  z-index: 1;
+  color: #666;
+  font-weight: 500;
+}
+
+.compact-form .ae-form-input {
+  padding: 10px 12px 6px;
+  font-size: 14px;
+}
+
+.compact-form .ae-form-row {
+  gap: 10px;
+}
+
+.compact-form .ae-login-button {
+  margin-top: 10px;
+  height: 44px;
+}
+
+@media (max-width: 480px) {
+  /* Scroll vertical para formularios muy largos */
+  .ae-login-container {
+    align-items: flex-start;
+    padding-top: 70px;
+    overflow-y: auto;
+    height: 100%;
+  }
+  
+  .ae-login-card {
+    margin-bottom: 20px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  
+  /* Reducir el espacio del título */
+  .ae-login-title {
+    margin-top: 0;
+  }
+  
+  /* Optimizar los espacios de los inputs */
+  .compact-form .ae-form-input::placeholder {
+    font-size: 13px;
+  }
+}

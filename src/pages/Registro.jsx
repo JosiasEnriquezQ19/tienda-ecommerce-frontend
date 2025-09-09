@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import './Login.css'
+import './register-mobile.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../auth/AuthContext'
 import axios from 'axios'
@@ -10,7 +11,18 @@ export default function Registro() {
   const [form, setForm] = useState({ email: '', password: '', nombre: '', apellido: '', telefono: '' })
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 480)
   const navigate = useNavigate()
+  
+  // Detector de tamaño de pantalla para aplicar clase compact-form
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 480)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   async function validateEmail(email) {
     try {
@@ -175,7 +187,7 @@ export default function Registro() {
         )}
         
         {/* Formulario */}
-        <form onSubmit={submit} className="ae-login-form">
+        <form onSubmit={submit} className={`ae-login-form ${isMobile ? 'compact-form' : ''}`}>
           <div className="ae-form-row">
             <div className="ae-form-group">
               <label className="ae-form-label">Nombre</label>
@@ -242,7 +254,7 @@ export default function Registro() {
           <div className="ae-terms-checkbox">
             <label className="ae-remember-me">
               <input type="checkbox" required />
-              <span>Acepto los <a href="/terminos" target="_blank">términos y condiciones</a> y la <a href="/privacidad" target="_blank">política de privacidad</a></span>
+              <span>Acepto los <a href="/terminos" target="_blank">términos</a> y <a href="/privacidad" target="_blank">política de privacidad</a></span>
             </label>
           </div>
           
