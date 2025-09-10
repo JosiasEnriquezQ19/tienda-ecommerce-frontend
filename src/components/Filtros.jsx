@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Filtros.css';
 
-export default function Filtros({ onFilter }) {
+export default function Filtros({ onFilter, onClose }) {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [tempPriceRange, setTempPriceRange] = useState([0, 1000]);
@@ -68,7 +68,6 @@ export default function Filtros({ onFilter }) {
   const applyFilters = () => {
     setPriceRange([...tempPriceRange]);
     setSelectedCategories([...tempSelectedCategories]);
-    
     onFilter && onFilter({ 
       categorias: tempSelectedCategories, 
       categoria: tempSelectedCategories[0] || '', 
@@ -76,23 +75,23 @@ export default function Filtros({ onFilter }) {
       precioMax: tempPriceRange[1],
       ratingMin: tempRating
     });
-    
-    // Mostrar mensaje de resultados de filtros
     setShowFilterResults(true);
     setTimeout(() => {
       setShowFilterResults(false);
-    }, 3000);
+    }, 1200);
+    if (isMobile && typeof onClose === 'function') onClose();
   };
-  
+
   // Limpiar filtros
   const clearFilters = () => {
     const clearedPriceRange = [0, 1000];
     const clearedCategories = [];
-    
     if (isMobile) {
       setTempPriceRange(clearedPriceRange);
       setTempSelectedCategories(clearedCategories);
       setTempRating(null);
+      onFilter && onFilter({ categorias: [], precioMin: 0, precioMax: 1000, ratingMin: null });
+      if (typeof onClose === 'function') onClose();
     } else {
       setPriceRange(clearedPriceRange);
       setSelectedCategories(clearedCategories);
@@ -110,12 +109,6 @@ export default function Filtros({ onFilter }) {
       
       <div className="ae-filters-header">
         <h3 className="ae-filters-title">Filtros</h3>
-        <button 
-          className="ae-clear-filters" 
-          onClick={clearFilters}
-        >
-          Limpiar todo
-        </button>
       </div>
 
       <div className="ae-filter-section">
@@ -212,6 +205,9 @@ export default function Filtros({ onFilter }) {
           </button>
           <button className="ae-filter-clear" onClick={clearFilters}>
             Limpiar filtros
+          </button>
+          <button className="ae-filter-close" onClick={onClose}>
+            Ocultar filtro
           </button>
         </div>
       )}
