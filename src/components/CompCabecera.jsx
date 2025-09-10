@@ -44,6 +44,41 @@ export default function CompCabecera({ totalProductos = 0 }) {
     };
   }, [lastScrollY, location.pathname]);
 
+  // Efecto para detectar gestos táctiles (swipe up / swipe down) y mostrar/ocultar header
+  useEffect(() => {
+    const touchStartYRef = { current: null };
+
+    const handleTouchStart = (e) => {
+      if (!e.touches || !e.touches[0]) return;
+      touchStartYRef.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!e.touches || !e.touches[0] || touchStartYRef.current == null) return;
+      const currentY = e.touches[0].clientY;
+      const delta = touchStartYRef.current - currentY; // positivo = swipe up
+      const THRESHOLD = 30; // px para considerar gesto
+
+      // aplicar el comportamiento de ocultar/mostrar independientemente de la ruta
+      if (delta > THRESHOLD) {
+        setHeaderVisible(false);
+      } else if (delta < -THRESHOLD) {
+        setHeaderVisible(true);
+      }
+
+      // actualizar para movimientos continuos
+      touchStartYRef.current = currentY;
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
   useEffect(() => {
     // trigger a small pop animation when the cart count changes
     setPulseCount(true)

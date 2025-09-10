@@ -310,6 +310,23 @@
     margin-bottom: 20px;
     padding: 16px;
   }
+
+  /* Make mobile filter buttons fixed to bottom so they remain visible while scrolling */
+  .ae-mobile-filter-buttons {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 1200;
+    gap: 12px;
+    padding: 10px; /* small padding inside container */
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,249,252,0.94));
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+  }
+
+  /* Add bottom safe area on container to avoid content hidden behind fixed buttons */
+  .ae-filters { padding-bottom: 80px; }
   
   .ae-filters-title {
     font-size: 16px;
