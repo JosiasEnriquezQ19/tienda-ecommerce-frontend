@@ -224,14 +224,11 @@ export default function ListaProductos() {
         <div className={`ae-filters-sidebar ${showFilters ? 'active' : ''}`}>
           <div className="ae-filters-header">
             <h3>Filtros</h3>
-            <button 
-              className="ae-close-filters"
-              onClick={() => setShowFilters(false)}
-            >
-              ×
-            </button>
           </div>
-          <Filtros onFilter={handleFilter} />
+          <Filtros 
+            onFilter={handleFilter} 
+            onClose={() => setShowFilters(false)} 
+          />
         </div>
         
         {/* Contenido principal */}

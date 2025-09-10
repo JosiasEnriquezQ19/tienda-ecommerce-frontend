@@ -244,7 +244,7 @@
   margin-top: 20px;
 }
 
-.ae-filter-apply, .ae-filter-clear {
+.ae-filter-apply, .ae-filter-clear, .ae-filter-close {
   flex: 1;
   padding: 12px 16px;
   border-radius: 12px;
@@ -273,6 +273,16 @@
 
 .ae-filter-clear:hover {
   background: #f5f5f5;
+}
+
+.ae-filter-close {
+  background: #e2e8f0;
+  border: 1px solid rgba(0,0,0,0.1);
+  color: #64748b;
+}
+
+.ae-filter-close:hover {
+  background: #cbd5e1;
 }
 
 /* Mensaje de filtros aplicados */
@@ -318,11 +328,13 @@
     right: 12px;
     bottom: 12px;
     z-index: 1200;
-    gap: 12px;
     padding: 10px; /* small padding inside container */
     background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,249,252,0.94));
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   /* Add bottom safe area on container to avoid content hidden behind fixed buttons */
