@@ -276,10 +276,10 @@ export default function DetalleProducto() {
                     className="ae-product-image"
                   />
                 </Zoom>
-                <div className="ae-zoom-hint">
+                {/* <div className="ae-zoom-hint">
                   <FaSearchPlus /> 
                   <span>Haz clic para ampliar</span>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="ae-thumbnails">
