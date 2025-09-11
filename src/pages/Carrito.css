@@ -446,6 +446,7 @@
 }
 
 /* Botón ver más vistoso */
+/* Botón ver más vistoso (más angosto) */
 .ae-item-viewmore {
   display: inline-flex;
   align-items: center;
@@ -456,10 +457,12 @@
   border-radius: 8px;
   font-weight: 600;
   font-size: 14px;
-  padding: 8px 18px;
+  padding: 6px 12px;
   margin: 8px 0 8px 0;
   box-shadow: 0 2px 8px rgba(255,79,79,0.10);
   cursor: pointer;
+  min-width: 90px;
+  max-width: 140px;
   transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .ae-item-viewmore:hover {

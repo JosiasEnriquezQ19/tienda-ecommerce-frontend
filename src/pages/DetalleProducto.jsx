@@ -368,12 +368,7 @@ export default function DetalleProducto() {
               >
                 Comprar ahora
               </button>
-              <button 
-                className={`ae-wishlist ${isWishlisted ? 'active' : ''}`}
-                onClick={toggleWishlist}
-              >
-                <FaHeart className="ae-wishlist-icon" />
-              </button>
+              {/* Wishlist (me gusta) eliminado */}
             </div>
 
             <div className="ae-payment-methods">

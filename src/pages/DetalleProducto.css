@@ -403,36 +403,7 @@
   background-color: rgba(255, 79, 79, 0.1);
 }
 
-.ae-wishlist {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  border: 1px solid var(--ae-glass-border);
-  background: rgba(255,255,255,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.ae-wishlist:hover {
-  border-color: var(--ae-primary);
-}
-
-.ae-wishlist.active {
-  border-color: var(--ae-primary);
-  background-color: rgba(255, 79, 79, 0.1);
-}
-
-.ae-wishlist.active .ae-wishlist-icon {
-  color: var(--ae-primary);
-}
-
-.ae-wishlist-icon {
-  color: var(--ae-text-light);
-  font-size: 18px;
-}
+/* Wishlist (me gusta) eliminado */
 
 .ae-cart-icon {
   font-size: 16px;
