@@ -86,8 +86,10 @@ export default function Carrito() {
         userToken
       );
 
-      // Éxito - limpiar carrito y redirigir
-      clear();
+      // Éxito - eliminar solo los productos seleccionados del carrito
+      for (const it of filteredItems) {
+        removeItem(it.uid ?? it.productoId ?? it.servidorId);
+      }
   const facturaId = res?.facturaId || res?.factura?.facturaId || res?.factura?.id;
   const pedidoId = res?.id || res?.pedidoId || res;
       
@@ -208,7 +210,16 @@ export default function Carrito() {
               const itemId = item.uid ?? item.servidorId ?? item.productoId ?? idx;
               const isChecked = selectedItems.includes(itemId);
               return (
-                <div className="ae-cart-item" key={itemId}>
+                <div className="ae-cart-item" key={itemId} style={{position:'relative'}}>
+                  {/* Checkbox en esquina superior izquierda */}
+                  <input
+                    type="checkbox"
+                    className="ae-item-checkbox"
+                    checked={isChecked}
+                    onChange={e => {
+                      setSelectedItems(sel => e.target.checked ? [...sel, itemId] : sel.filter(id => id !== itemId));
+                    }}
+                  />
                   <div className="ae-item-image">
                     <img 
                       src={item.imagen || item.image || '/placeholder-product.jpg'} 
@@ -217,14 +228,6 @@ export default function Carrito() {
                   </div>
                   <div className="ae-item-details">
                     <div className="ae-item-header" style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={e => {
-                          setSelectedItems(sel => e.target.checked ? [...sel, itemId] : sel.filter(id => id !== itemId));
-                        }}
-                        style={{marginRight:'8px'}}
-                      />
                       <h3 className="ae-item-name" style={{margin:0}}>
                         {item.nombre || item.name || `Producto ${item.productoId ?? item.id ?? item.ProductoId}`}
                       </h3>
@@ -236,14 +239,14 @@ export default function Carrito() {
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                         </svg>
                       </button>
-                      <button
-                        className="ae-item-viewmore"
-                        style={{marginLeft:'auto'}}
-                        onClick={() => navigate(`/producto/${item.productoId ?? item.id ?? item.ProductoId}`)}
-                      >
-                        Ver más
-                      </button>
                     </div>
+                    <button
+                      className="ae-item-viewmore"
+                      onClick={() => navigate(`/producto/${item.productoId ?? item.id ?? item.ProductoId}`)}
+                    >
+                      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{marginRight:'6px',verticalAlign:'middle'}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
+                      Ver más
+                    </button>
                     <div className="ae-item-price">
                       S/ {(item.precio || 0).toFixed(2)}
                     </div>
