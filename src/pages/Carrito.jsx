@@ -9,6 +9,7 @@ import './Carrito.css';
 
 export default function Carrito() {
   const { items, removeItem, clear, updateQuantity } = useContext(CartContext);
+  const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -16,15 +17,16 @@ export default function Carrito() {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const navigate = useNavigate();
   
-  // Calcular totales
-  const subtotal = items.reduce((sum, item) => sum + ((Number(item.precio) || 0) * (Number(item.cantidad) || 0)), 0);
-  const distinctCount = items.length;
-  const totalUnits = items.reduce((sum, item) => sum + (Number(item.cantidad) || 0), 0);
+  // Calcular totales solo de los seleccionados
+  const filteredItems = selectedItems.length > 0 ? items.filter(it => selectedItems.includes(it.uid ?? it.productoId ?? it.servidorId)) : items;
+  const subtotal = filteredItems.reduce((sum, item) => sum + ((Number(item.precio) || 0) * (Number(item.cantidad) || 0)), 0);
+  const distinctCount = filteredItems.length;
+  const totalUnits = filteredItems.reduce((sum, item) => sum + (Number(item.cantidad) || 0), 0);
   // Impuestos deshabilitados
   const impuestos = 0;
 
   // Business rule: if any item has more than 5 units, that item gets 30% off, shipping is free, and customer *earns* a S/400 coupon (for future use).
-  const discountsByItem = items.map(it => {
+  const discountsByItem = filteredItems.map(it => {
     const qty = Number(it.cantidad || 0);
     if (qty > 5) {
       const base = Number(it.precio || 0) * qty;
@@ -34,12 +36,11 @@ export default function Carrito() {
     return { productoId: it.productoId, descuento: 0 };
   });
   const discountTotal = discountsByItem.reduce((s, d) => s + (Number(d.descuento) || 0), 0);
-  const couponEarned = items.some(it => Number(it.cantidad || 0) > 5);
+  const couponEarned = filteredItems.some(it => Number(it.cantidad || 0) > 5);
   const rewardCouponValue = couponEarned ? 400 : 0;
 
   // Shipping becomes free if couponEarned OR if subtotal > 100 (legacy rule)
   const envio = (couponEarned || subtotal > 100) ? 0 : 9.99;
-
   const total = Math.max(0, subtotal - discountTotal + envio); // No impuestos
 
   // Procesar pedido
@@ -55,7 +56,7 @@ export default function Carrito() {
     
     const userId = user.UsuarioId || user.usuarioId || user.id;
     if(!userId) { setError('Usuario inválido'); return; }
-    if(items.length === 0) { setError('El carrito está vacío'); return; }
+  if(filteredItems.length === 0) { setError('Selecciona al menos un producto para comprar'); return; }
     if(!selectedAddressId) { setError('Selecciona una dirección de envío'); return; }
 
     setLoading(true);
@@ -63,7 +64,7 @@ export default function Carrito() {
     try {
       // Preparar los items para la creación del pedido
       const normalizeProductoId = (it) => Number(it.productoId ?? it.productId ?? it.id ?? it.ProductoId);
-      const pedidoItems = items.map(it => ({ 
+      const pedidoItems = filteredItems.map(it => ({ 
         productoId: normalizeProductoId(it), 
         cantidad: Number(it.cantidad || 1) 
       }));
@@ -99,7 +100,7 @@ export default function Carrito() {
         total: Number(total.toFixed(2)),
         couponEarned,
         rewardCouponValue,
-        items: items.map(it => ({
+        items: filteredItems.map(it => ({
           productoId: it.productoId,
           nombre: it.nombre || it.name,
           cantidad: it.cantidad,
@@ -203,72 +204,81 @@ export default function Carrito() {
         <div className="ae-cart-content">
           {/* Lista de productos */}
           <div className="ae-cart-items">
-            {items.map((item, idx) => (
-              <div className="ae-cart-item" key={item.uid ?? item.servidorId ?? item.productoId ?? idx}>
-                <div className="ae-item-image">
-                  <img 
-                    src={item.imagen || item.image || '/placeholder-product.jpg'} 
-                    alt={item.nombre || item.name || ''} 
-                  />
-                </div>
-                
-                <div className="ae-item-details">
-                  <div className="ae-item-header">
-                    <h3 className="ae-item-name">
-                      <Link to={`/producto/${item.productoId ?? item.id ?? item.ProductoId}`}>
-                        {item.nombre || item.name || `Producto ${item.productoId ?? item.id ?? item.ProductoId}`}
-                      </Link>
-                    </h3>
-                    <button 
-                      className="ae-item-remove"
-                      onClick={() => removeItem(item.uid ?? item.productoId ?? item.servidorId)}
-                    >
-                      <svg viewBox="0 0 24 24">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                      </svg>
-                    </button>
+            {items.map((item, idx) => {
+              const itemId = item.uid ?? item.servidorId ?? item.productoId ?? idx;
+              const isChecked = selectedItems.includes(itemId);
+              return (
+                <div className="ae-cart-item" key={itemId}>
+                  <div className="ae-item-image">
+                    <img 
+                      src={item.imagen || item.image || '/placeholder-product.jpg'} 
+                      alt={item.nombre || item.name || ''} 
+                    />
                   </div>
-                  
-                  {item.descripcion && (
-                    <p className="ae-item-description">{item.descripcion}</p>
-                  )}
-                  
-                  <div className="ae-item-price">
-                    S/ {(item.precio || 0).toFixed(2)}
-                  </div>
-                  
-                  <div className="ae-item-actions">
-                    <div className="ae-quantity-selector">
-                      <button 
-                        className="ae-quantity-btn"
-                        onClick={() => handleQuantityChange(item.uid ?? item.productoId ?? item.servidorId, (item.cantidad || 1) - 1)}
-                        disabled={item.cantidad <= 1}
-                      >
-                        -
-                      </button>
+                  <div className="ae-item-details">
+                    <div className="ae-item-header" style={{display:'flex',alignItems:'center',gap:'8px'}}>
                       <input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={item.cantidad || 1}
-                        onChange={(e) => handleQuantityChange(item.uid ?? item.productoId ?? item.servidorId, e.target.value)}
-                        className="ae-quantity-input"
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={e => {
+                          setSelectedItems(sel => e.target.checked ? [...sel, itemId] : sel.filter(id => id !== itemId));
+                        }}
+                        style={{marginRight:'8px'}}
                       />
+                      <h3 className="ae-item-name" style={{margin:0}}>
+                        {item.nombre || item.name || `Producto ${item.productoId ?? item.id ?? item.ProductoId}`}
+                      </h3>
                       <button 
-                        className="ae-quantity-btn"
-                        onClick={() => handleQuantityChange(item.uid ?? item.productoId ?? item.servidorId, (item.cantidad || 1) + 1)}
+                        className="ae-item-remove"
+                        onClick={() => removeItem(itemId)}
                       >
-                        +
+                        <svg viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                      <button
+                        className="ae-item-viewmore"
+                        style={{marginLeft:'auto'}}
+                        onClick={() => navigate(`/producto/${item.productoId ?? item.id ?? item.ProductoId}`)}
+                      >
+                        Ver más
                       </button>
                     </div>
-                    
-                    <div className="ae-item-total">
-                      S/ {((item.precio || 0) * (item.cantidad || 1)).toFixed(2)}
+                    <div className="ae-item-price">
+                      S/ {(item.precio || 0).toFixed(2)}
+                    </div>
+                    <div className="ae-item-actions">
+                      <div className="ae-quantity-selector">
+                        <button 
+                          className="ae-quantity-btn"
+                          onClick={() => handleQuantityChange(itemId, (item.cantidad || 1) - 1)}
+                          disabled={item.cantidad <= 1}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={item.cantidad || 1}
+                          onChange={(e) => handleQuantityChange(itemId, e.target.value)}
+                          className="ae-quantity-input"
+                        />
+                        <button 
+                          className="ae-quantity-btn"
+                          onClick={() => handleQuantityChange(itemId, (item.cantidad || 1) + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="ae-item-total">
+                        S/ {((item.precio || 0) * (item.cantidad || 1)).toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Resumen de compra */}
