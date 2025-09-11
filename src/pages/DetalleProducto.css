@@ -94,7 +94,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 400px;
+  height: 560px;
   border: 1px solid var(--ae-border);
   box-shadow: 0 6px 18px rgba(10,10,10,0.06);
   margin: 0 auto;
