@@ -100,12 +100,15 @@
   margin: 0 auto;
 }
 
+/* Imagen principal del producto adaptada al cuadro */
 .ae-product-image {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   cursor: zoom-in;
+  display: block;
 }
+
 
 /* Estilos para el contenedor de zoom */
 .ae-zoom-container {
