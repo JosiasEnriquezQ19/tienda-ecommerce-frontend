@@ -5,7 +5,7 @@
   publish = "dist"
   
 [build.environment]
-  VITE_API_BASE = "https://simple-marketplace-api-production.up.railway.app/api"
+  VITE_API_BASE = "https://simple-marketplace-api.onrender.com/api"
   VITE_DEFAULT_USER_ID = "1"
 
 [[redirects]]
