@@ -1,268 +1,261 @@
-/* Estilos generales del banner */
-.ae-banner {
-  /* Use app primary gradient so banner matches the "Registrarse" button */
-  background: linear-gradient(135deg, var(--hd-primary) 0%, var(--hd-primary-dark) 100%);
-  /* translucent overlay using the primary color at low opacity for a frosted look */
-  background-color: rgba(59,130,246,0.18);
-  color: #ffffff;
+/* Slider Container */
+.ae-banner-slider {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 48px rgba(2,32,54,0.12);
-  margin: 20px auto;
-  max-width: 1200px;
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  transform: translateY(6px);
-  animation: bannerSlideIn 720ms cubic-bezier(.22,.9,.3,1) both;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
+  background: #f8fafc;
+  /* Fallback */
+  height: 400px;
+  /* Fixed height for consistency */
 }
 
-.ae-banner-container {
-  padding: 24px;
+.ae-slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.ae-banner-content {
+.ae-slide {
+  min-width: 100%;
+  height: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Themes */
+.ae-theme-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.ae-theme-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: white;
+}
+
+.ae-theme-dark {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: white;
+}
+
+.ae-slide-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  max-width: 1000px;
+  gap: 40px;
 }
 
-/* Estilos del texto */
-.ae-banner-text {
+/* Text Content */
+.ae-slide-text {
   flex: 1;
-  padding-right: 28px;
   z-index: 2;
-  will-change: transform, opacity;
-  color: #ffffff;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideFadeIn 0.8s forwards 0.3s;
 }
 
-.ae-banner-subtitle {
+@keyframes slideFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ae-slide-subtitle {
   display: inline-block;
-  background: rgba(255,255,255,0.12);
-  color: #ffffff;
-  padding: 6px 14px;
-  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
-  transition: transform 420ms cubic-bezier(.2,.9,.3,1), box-shadow 420ms;
-}
-
-/* Subhead container and animated decor */
-.ae-banner-subhead{ display:flex; align-items:center; gap:10px }
-.ae-banner-decor{ display:flex; gap:8px; align-items:center }
-.ae-banner-decor .dot{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.22); box-shadow: 0 6px 18px rgba(4,46,60,0.05); }
-.ae-banner-decor .d1{ transform: translateY(0); animation: floaty 4.4s cubic-bezier(.2,.9,.2,1) infinite }
-.ae-banner-decor .d2{ transform: translateY(0); animation: floaty 4.8s cubic-bezier(.2,.9,.2,1) .2s infinite }
-.ae-banner-decor .d3{ transform: translateY(0); animation: floaty 5.2s cubic-bezier(.2,.9,.2,1) .4s infinite }
-@keyframes floaty{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-8px) } 100%{ transform: translateY(0) } }
-
-/* Title shimmer */
-.ae-banner-title{ position:relative; overflow:visible; color: #ffffff; font-weight:700 }
-.ae-banner-title::after{ content:''; position:absolute; left:-30%; top:0; width:22%; height:100%; background:linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.18), rgba(255,255,255,0.05)); transform: skewX(-14deg); animation: titleShimmer 3200ms linear infinite }
-@keyframes titleShimmer{ 0%{ left:-50% } 100%{ left:160% } }
-
-/* Description fade and subtle upward motion */
-.ae-banner-description{ transform: translateY(6px); opacity:0; color: rgba(255,255,255,0.9); animation: descIn 880ms cubic-bezier(.2,.9,.3,1) forwards 240ms }
-@keyframes descIn{ to { transform: translateY(0); opacity:0.95 } }
-
-/* CTA micro interactions */
-.ae-banner-button{ transition: transform .26s cubic-bezier(.2,.9,.3,1), box-shadow .26s; background: rgba(255,255,255,0.92); color: #034b6b }
-.ae-banner-button:active{ transform: translateY(1px) scale(.995) }
-.ae-banner-button .ae-arrow-icon{ transition: transform .28s cubic-bezier(.2,.9,.3,1) }
-.ae-banner-button:hover .ae-arrow-icon{ transform: translateX(6px) }
-
-/* subtle background shapes */
-.ae-banner::before, .ae-banner::after{ content:''; position:absolute; pointer-events:none }
-.ae-banner::before{ right:-80px; top:-40px; width:260px; height:260px; background: radial-gradient(circle at 30% 30%, rgba(59,130,246,0.22), rgba(59,130,246,0)); transform: rotate(12deg); filter: blur(18px) }
-.ae-banner::after{ left:-60px; bottom:-40px; width:200px; height:200px; background: radial-gradient(circle at 60% 60%, rgba(59,130,246,0.14), rgba(59,130,246,0)); filter: blur(24px) }
-
-.ae-banner-title {
-  font-size: 32px;
   font-weight: 700;
-  margin: 0 0 16px 0;
-  line-height: 1.2;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
 }
 
-.ae-banner-description {
-  font-size: 16px;
-  margin-bottom: 24px;
+.ae-slide-title {
+  font-size: 42px;
+  font-weight: 800;
+  margin: 0 0 16px;
+  line-height: 1.1;
+}
+
+.ae-slide-desc {
+  font-size: 18px;
   opacity: 0.9;
-  max-width: 80%;
+  margin-bottom: 32px;
+  line-height: 1.5;
+  max-width: 90%;
 }
 
-/* Estilos del temporizador */
-.ae-banner-timer {
-  display: flex;
+.ae-slide-button {
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 24px;
-  font-size: 14px;
-}
-
-.ae-banner-timer span {
-  margin-right: 12px;
-}
-
-.ae-timer {
-  display: flex;
-  gap: 4px;
-}
-
-.ae-timer-box {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-weight: 600;
-}
-
-/* Estilos del botón */
-.ae-banner-button {
-  display: flex;
-  align-items: center;
-  background-color: white;
-  color: #1d4ed8;
-  border: none;
-  padding: 12px 24px;
+  padding: 14px 28px;
+  background: white;
+  color: #1f2937;
+  /* Default dark text */
   border-radius: 8px;
   font-weight: 700;
-  cursor: pointer;
+  text-decoration: none;
   transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.ae-banner-button:hover {
-  background-color: #f0f0f0;
+.ae-theme-blue .ae-slide-button {
+  color: #1d4ed8;
+}
+
+.ae-theme-purple .ae-slide-button {
+  color: #6d28d9;
+}
+
+.ae-theme-dark .ae-slide-button {
+  color: #111827;
+}
+
+.ae-slide-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Glowing CTA */
-.ae-banner-button { position: relative; overflow: visible }
-.ae-banner-button::after{
-  content:''; position:absolute; inset: -6px; border-radius: 12px; z-index:-1; background: radial-gradient(closest-side, rgba(14,165,219,0.18), rgba(2,6,23,0)); opacity:0; transition: opacity .25s ease;
-}
-.ae-banner-button:hover::after{ opacity:1 }
-
-/* Image shimmer */
-.ae-product-image{ position: relative; overflow: hidden; transition: transform 420ms cubic-bezier(.2,.9,.3,1) }
-.ae-product-image::after{ content:''; position:absolute; left:-40%; top:0; width:40%; height:100%; background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.14), rgba(255,255,255,0.04)); transform: skewX(-16deg); animation: shimmer 3200ms linear infinite; pointer-events:none }
-
-@keyframes shimmer{ 0% { left:-70% } 100% { left:150% } }
-
-.ae-arrow-icon {
-  width: 18px;
-  height: 18px;
-  margin-left: 8px;
-  stroke: var(--hd-primary-dark);
-  stroke-width: 2;
-}
-
-/* Estilos de la imagen */
-.ae-banner-image {
-  position: relative;
+/* Image */
+.ae-slide-image-wrapper {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.ae-product-image {
-  max-height: 280px;
-  object-fit: contain;
-  border-radius: 4px;
   z-index: 1;
 }
 
-.ae-price-tag {
+.ae-slide-image {
+  max-height: 320px;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.2));
+  transform: scale(0.9);
+  animation: imagePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.3s;
+}
+
+@keyframes imagePop {
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Controls */
+.ae-slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: white;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.ae-banner-slider:hover .ae-slider-arrow {
+  opacity: 1;
+}
+
+.ae-slider-arrow:hover {
+  background: white;
+  color: black;
+}
+
+.ae-slider-arrow.prev {
+  left: 20px;
+}
+
+.ae-slider-arrow.next {
+  right: 20px;
+}
+
+.ae-slider-arrow svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* Dots */
+.ae-slider-dots {
   position: absolute;
   bottom: 20px;
-  right: 20px;
-  background-color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 8px;
+  z-index: 10;
 }
 
-.ae-old-price {
-  font-size: 12px;
-  color: #999;
-  text-decoration: line-through;
+.ae-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.ae-new-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1d4ed8;
+.ae-dot.active {
+  width: 30px;
+  border-radius: 10px;
+  background: white;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .ae-banner-content {
-    flex-direction: column;
+  .ae-banner-slider {
+    height: auto;
+    min-height: 500px;
   }
-  
-  .ae-banner-text {
-    padding-right: 0;
-    margin-bottom: 24px;
+
+  .ae-slide {
+    padding: 30px 20px;
+  }
+
+  .ae-slide-content {
+    flex-direction: column-reverse;
     text-align: center;
+    gap: 20px;
   }
-  
-  .ae-banner-description {
-    max-width: 100%;
+
+  .ae-slide-desc {
+    margin: 0 auto 24px;
   }
-  
-  .ae-banner-timer {
-    justify-content: center;
+
+  .ae-slide-image {
+    max-height: 200px;
   }
-}
 
-/* Countdown animation and styling enhancements */
-.ae-banner-with-countdown { position: relative; }
-.ae-banner-timer { display:flex; align-items:center; gap:12px }
-.ae-termina { font-weight:600; opacity:0.95 }
-.ae-animated-timer { display:flex; align-items:center; gap:8px }
-.ae-timer-segment { display:flex; flex-direction:column; align-items:center }
-.ae-timer-segment small{ font-size:10px; color: rgba(255,255,255,0.9); margin-top:4px }
-.ae-colon{ font-size:20px; font-weight:800; opacity:0.95 }
-.ae-timer-box { background: rgba(255,255,255,0.12); padding: 8px 10px; border-radius:8px; font-family: monospace; font-weight:800; min-width:48px; text-align:center; color: #fff }
+  .ae-slider-arrow {
+    display: none;
+  }
 
-/* subtle pulse for seconds */
-.ae-digit.animated { transform-origin: center; transition: transform 160ms ease-out }
-.ae-digit.pulse { animation: ae-pulse 1s infinite cubic-bezier(.2,.8,.2,1) }
-
-/* flip when value changes */
-.ae-timer-box.flip { animation: digitFlip 420ms cubic-bezier(.2,.9,.3,1) }
-@keyframes digitFlip{
-  0% { transform: rotateX(0deg) }
-  50% { transform: rotateX(-90deg) }
-  100% { transform: rotateX(0deg) }
-}
-
-@keyframes ae-pulse {
-  0% { transform: scale(1) }
-  50% { transform: scale(1.06) }
-  100% { transform: scale(1) }
-}
-
-/* glow entrance */
-.ae-timer-box { box-shadow: 0 6px 16px rgba(2,6,23,0.15), inset 0 -6px 18px rgba(255,255,255,0.02) }
-
-@media (max-width: 520px){
-  .ae-timer-box{ min-width:72px }
-}
-
-@keyframes bannerSlideIn{ from { opacity:0; transform: translateY(18px) scale(.995) } to { opacity:1; transform: translateY(0) scale(1) } }
-
-/* gentle 3D parallax on hover for desktop */
-.ae-banner:hover{ transform: translateY(0) translateZ(0) scale(1.007); box-shadow: 0 32px 60px rgba(6,22,39,0.09) }
-.ae-banner:hover .ae-product-image{ transform: translateY(-6px) scale(1.02) }
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .ae-banner, .ae-banner-title::after, .ae-product-image::after, .ae-banner-decor .dot, .ae-timer-box.flip { animation: none !important; transition: none !important }
+  /* Hide arrows on mobile */
+  .ae-slider-dots {
+    bottom: 15px;
+  }
 }

@@ -19,7 +19,7 @@ export default function ListaProductos() {
   const navigate = useNavigate();
   const { term: query } = useCtx(SearchContext);
   const [sortOption, setSortOption] = useState('popular');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(window.innerWidth > 992);
 
   const normalizeCategory = (raw) => {
     if (!raw && raw !== 0) return 'Otros';
@@ -46,22 +46,22 @@ export default function ListaProductos() {
 
     const fetchProducts = async () => {
       try {
-  // Build query params
-  const params = new URLSearchParams();
-  if (query) params.append('search', query);
-  // If filters.categorias is an array, append each category by name so backend can filter
-  if (Array.isArray(filters.categorias) && filters.categorias.length) {
+        // Build query params
+        const params = new URLSearchParams();
+        if (query) params.append('search', query);
+        // If filters.categorias is an array, append each category by name so backend can filter
+        if (Array.isArray(filters.categorias) && filters.categorias.length) {
           filters.categorias.forEach(c => params.append('category', c));
         } else if (filters.categoria) {
           // backward compatibility with single-value filter key
           params.append('category', filters.categoria);
         }
         if (filters.precioMax) params.append('maxPrice', filters.precioMax);
-        
+
         const response = await axios.get(`${API}/Productos?${params.toString()}`);
-        
+
         if (cancelled) return;
-        
+
         const data = Array.isArray(response.data) ? response.data : (response.data?.items || []);
         const normalized = data.map(p => {
           const rawCat = p.categoria ?? p.idCategoria ?? p.categoriaNombre ?? p.category ?? '';
@@ -86,7 +86,7 @@ export default function ListaProductos() {
             disponible: rawEstado === 'disponible'
           })
         });
-        
+
         // Try to enrich products with average rating and reviews count by fetching comentarios
         try {
           const withRatings = await Promise.all(normalized.map(async (p) => {
@@ -96,7 +96,7 @@ export default function ListaProductos() {
 
               // robust score extractor - accept different field names
               const getScore = (c) => {
-                const candidates = ['puntuacion','puntuacion_estrellas','estrellas','rating','valor','score','valoracion'];
+                const candidates = ['puntuacion', 'puntuacion_estrellas', 'estrellas', 'rating', 'valor', 'score', 'valoracion'];
                 for (const k of candidates) {
                   if (c[k] != null && c[k] !== '') {
                     const n = Number(c[k]);
@@ -137,7 +137,7 @@ export default function ListaProductos() {
     };
 
     fetchProducts();
-    
+
     return () => cancelled = true;
   }, [query, filters]);
 
@@ -161,7 +161,7 @@ export default function ListaProductos() {
   // Filter and sort products
   // Exclude products explicitly marked as oculto by default
   let productosAMostrar = productos.filter(p => !p.oculto);
-  
+
   // Client-side filtering as fallback
   if (Array.isArray(filters.categorias) && filters.categorias.length) {
     // keep items whose normalized categoria is included in the selected list
@@ -169,13 +169,13 @@ export default function ListaProductos() {
   } else if (filters.categoria) {
     productosAMostrar = productosAMostrar.filter(p => String(p.categoria) === String(filters.categoria));
   }
-  
+
   if (filters.precioMax) {
     productosAMostrar = productosAMostrar.filter(p => (p.precio || 0) <= Number(filters.precioMax));
   }
-  
+
   if (query) {
-    productosAMostrar = productosAMostrar.filter(p => 
+    productosAMostrar = productosAMostrar.filter(p =>
       p.nombre?.toLowerCase().includes(query.toLowerCase()) ||
       p.descripcion?.toLowerCase().includes(query.toLowerCase())
     );
@@ -208,29 +208,29 @@ export default function ListaProductos() {
   return (
     <div className="ae-products-page">
       <Banner />
-      
+
       <div className="ae-products-container">
         {/* Filtros móvil */}
-        <button 
+        <button
           className="ae-mobile-filters-btn"
           onClick={() => setShowFilters(!showFilters)}
         >
           <svg viewBox="0 0 24 24">
-            <path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39c.51-.66.04-1.61-.79-1.61H5.04c-.83 0-1.3.95-.79 1.61z"/>
+            <path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39c.51-.66.04-1.61-.79-1.61H5.04c-.83 0-1.3.95-.79 1.61z" />
           </svg>
           Filtros
         </button>
-        
-        <div className={`ae-filters-sidebar ${showFilters ? 'active' : ''}`}>
+
+        <div className={`ae-filters-sidebar ${showFilters ? 'active' : 'hidden-desktop'}`}>
           <div className="ae-filters-header">
             <h3>Filtros</h3>
           </div>
-          <Filtros 
-            onFilter={handleFilter} 
-            onClose={() => setShowFilters(false)} 
+          <Filtros
+            onFilter={handleFilter}
+            onClose={() => setShowFilters(false)}
           />
         </div>
-        
+
         {/* Contenido principal */}
         <main className="ae-products-main">
           <div className="ae-products-header">
@@ -240,10 +240,20 @@ export default function ListaProductos() {
                 <span className="ae-products-count"> ({productosAMostrar.length} productos)</span>
               )}
             </h1>
-            
+
+            <button
+              className="ae-desktop-filters-toggle"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <svg viewBox="0 0 24 24" className="ae-filter-icon">
+                <path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39c.51-.66.04-1.61-.79-1.61H5.04c-.83 0-1.3.95-.79 1.61z" />
+              </svg>
+              {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
+            </button>
+
             <div className="ae-sort-options">
               <label htmlFor="sort-by">Ordenar por:</label>
-              <select 
+              <select
                 id="sort-by"
                 value={sortOption}
                 onChange={handleSortChange}
@@ -257,7 +267,7 @@ export default function ListaProductos() {
               </select>
             </div>
           </div>
-          
+
           {loading ? (
             <div className="ae-loading">
               <div className="ae-spinner"></div>
@@ -266,10 +276,10 @@ export default function ListaProductos() {
           ) : error ? (
             <div className="ae-error">
               <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
               </svg>
               <p>{error}</p>
-              <button 
+              <button
                 className="ae-retry-btn"
                 onClick={() => window.location.reload()}
               >
@@ -279,9 +289,9 @@ export default function ListaProductos() {
           ) : productosAMostrar.length > 0 ? (
             <div className="ae-product-grid">
               {productosAMostrar.map(p => (
-                <TarjetaProducto 
-                  key={p.productoId} 
-                  product={p} 
+                <TarjetaProducto
+                  key={p.productoId}
+                  product={p}
                   onQuickView={() => navigate(`/producto/${p.productoId}`)}
                 />
               ))}
@@ -289,12 +299,12 @@ export default function ListaProductos() {
           ) : (
             <div className="ae-no-results">
               <svg viewBox="0 0 24 24">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
-                <path d="M12 18c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-1-8h2v-3h-2v3z"/>
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+                <path d="M12 18c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-1-8h2v-3h-2v3z" />
               </svg>
               <h3>No se encontraron productos</h3>
               <p>Intenta ajustar tus filtros o términos de búsqueda</p>
-              <button 
+              <button
                 className="ae-clear-filters-btn"
                 onClick={() => {
                   setFilters({});

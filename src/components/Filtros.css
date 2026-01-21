@@ -317,46 +317,161 @@
 @media (max-width: 768px) {
   .ae-filters {
     width: 100%;
-    margin-bottom: 20px;
-    padding: 16px;
+    max-width: 100%;
+    margin: 0;
+    padding: 16px 12px 140px 12px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--ae-border);
+    box-shadow: 0 4px 12px rgba(16,24,40,0.04);
   }
 
-  /* Make mobile filter buttons fixed to bottom so they remain visible while scrolling */
+  .ae-filters-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .ae-filters-title {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  /* Secciones de filtros más compactas */
+  .ae-filter-section {
+    margin-bottom: 20px;
+    padding: 14px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  
+  .ae-filter-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--ae-text);
+  }
+  
+  /* Categorías más compactas */
+  .ae-category-filters {
+    gap: 6px;
+  }
+
+  .ae-category-checkbox {
+    padding: 10px 10px 10px 34px;
+    font-size: 13px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .ae-checkmark {
+    left: 8px;
+    height: 16px;
+    width: 16px;
+  }
+
+  .ae-category-checkbox .ae-checkmark:after {
+    left: 5px;
+    top: 1px;
+    width: 4px;
+    height: 9px;
+  }
+  
+  /* Inputs de precio mejorados para móvil */
+  .ae-price-inputs {
+    gap: 8px;
+    justify-content: space-between;
+  }
+  
+  .ae-price-input {
+    flex: 1;
+    max-width: calc(50% - 8px);
+    padding: 10px 8px;
+    font-size: 13px;
+    text-align: center;
+    background: rgba(255,255,255,0.9);
+  }
+
+  .ae-price-separator {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .ae-price-slider {
+    margin: 16px 0;
+  }
+
+  /* Rating más compacto */
+  .ae-rating-filters {
+    gap: 8px;
+  }
+
+  .ae-rating-option {
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.04);
+    font-size: 13px;
+  }
+
+  .ae-star {
+    font-size: 14px;
+  }
+
+  /* Botones fijos al fondo mejorados */
   .ae-mobile-filter-buttons {
     position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1200;
-    padding: 10px; /* small padding inside container */
-    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,249,252,0.94));
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,1));
+    border-top: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 -4px 20px rgba(2,6,23,0.08);
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  /* Add bottom safe area on container to avoid content hidden behind fixed buttons */
-  .ae-filters { padding-bottom: 80px; }
-  
-  .ae-filters-title {
-    font-size: 16px;
-  }
-  
-  .ae-filter-section-title {
+  .ae-filter-apply, .ae-filter-clear, .ae-filter-close {
+    width: 100%;
+    padding: 14px 16px;
     font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
   }
-  
-  .ae-category-checkbox {
-    padding: 8px 8px 8px 32px;
+
+  .ae-filter-apply {
+    background: linear-gradient(135deg, var(--ae-primary), var(--ae-primary-dark));
+    border: none;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 79, 79, 0.25);
   }
-  
-  .ae-price-inputs {
-    flex-wrap: wrap;
+
+  .ae-filter-apply:active {
+    transform: scale(0.98);
   }
-  
-  .ae-price-input {
-    width: calc(50% - 10px);
+
+  .ae-filter-clear {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.12);
+    color: var(--ae-text);
+  }
+
+  .ae-filter-close {
+    background: transparent;
+    border: none;
+    color: var(--ae-text-light);
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  /* Mensaje de filtros aplicados */
+  .ae-filter-results {
+    bottom: 140px;
+    font-size: 13px;
+    padding: 10px 20px;
   }
 }

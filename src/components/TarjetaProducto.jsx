@@ -15,8 +15,13 @@ export default function TarjetaProducto({ p, product }) {
   const isAgotado = estado === 'agotado' || (item?.stock ?? 0) <= 0
   const isDescontinuado = estado === 'descontinuado'
 
+  const CardWrapper = isOculto || isDescontinuado ? 'article' : Link
+
   return (
-    <article className="card producto-card">
+    <CardWrapper 
+      to={!isOculto && !isDescontinuado ? `/producto/${item.productoId || item.id}` : undefined}
+      className={`card producto-card ${!isOculto && !isDescontinuado ? 'producto-card-clickable' : ''}`}
+    >
       <div className="producto-media">
         <img src={imagen} alt={nombre} />
   {destacado && <span className="badge">Oferta</span>}
@@ -43,15 +48,8 @@ export default function TarjetaProducto({ p, product }) {
             </div>
             {envioGratis && <div className="envio">Envío gratis</div>}
           </div>
-          <div className="acciones">
-            {isOculto || isDescontinuado ? (
-              <button className="btn-ver disabled" disabled>Ver</button>
-            ) : (
-              <Link to={`/producto/${item.productoId || item.id}`} className="btn-ver">Ver</Link>
-            )}
-          </div>
         </div>
       </div>
-    </article>
+    </CardWrapper>
   )
 }

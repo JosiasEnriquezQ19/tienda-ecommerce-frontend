@@ -11,38 +11,41 @@ export default function CompCabecera({ totalProductos = 0 }) {
   const { items } = useContext(CartContext)
   const [pulseCount, setPulseCount] = useState(false)
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  // Use a ref for lastScrollY to avoid re-binding the event listener on every scroll
+  const lastScrollY = useRef(0);
+  // We still need state for visibility to trigger re-renders
   const location = useLocation();
   const totalProductosCount = Array.isArray(items) ? items.reduce((s, it) => s + (Number(it.cantidad) || 0), 0) : 0
-  
+
   // Efecto para controlar la visibilidad del header al hacer scroll
   useEffect(() => {
     const controlHeader = () => {
+      if (mobileSearchOpen) return; // Don't hide header if mobile search is active
+
       const currentScrollY = window.scrollY;
-      
-      // Si estamos en la página principal, aplicamos el comportamiento de ocultar al hacer scroll down
-      if (location.pathname === '/' || location.pathname === '/productos') {
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          // Scroll hacia abajo y más de 100px - ocultamos el header
-          setHeaderVisible(false);
-        } else {
-          // Scroll hacia arriba - mostramos el header
-          setHeaderVisible(true);
-        }
+
+      // Threshold to prevent jitter (e.g., 5px difference)
+      if (Math.abs(currentScrollY - lastScrollY.current) < 5) return;
+
+      // If scrolling down and past 80px, hide header
+      if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
+        // Scrolling DOWN > 80px -> Hide
+        setHeaderVisible(false);
       } else {
-        // En otras páginas, siempre mostramos el header
+        // If scrolling up or at top, show header
+        // Scrolling UP -> Show
         setHeaderVisible(true);
       }
-      
-      setLastScrollY(currentScrollY);
+
+      lastScrollY.current = currentScrollY;
     };
-    
-    window.addEventListener('scroll', controlHeader);
-    
+
+    window.addEventListener('scroll', controlHeader, { passive: true });
     return () => {
       window.removeEventListener('scroll', controlHeader);
     };
-  }, [lastScrollY, location.pathname]);
+  }, [mobileSearchOpen]); // dependency on mobileSearchOpen to prevent hiding while searching
 
   // Efecto para detectar gestos táctiles (swipe up / swipe down) y mostrar/ocultar header
   useEffect(() => {
@@ -108,8 +111,8 @@ export default function CompCabecera({ totalProductos = 0 }) {
   }, []);
   const { term: searchQuery, setTerm } = useCtx(SearchContext)
 
-  const handleLogout = () => { 
-    logout(); 
+  const handleLogout = () => {
+    logout();
     navigate('/');
     setShowDropdown(false);
   };
@@ -122,7 +125,7 @@ export default function CompCabecera({ totalProductos = 0 }) {
       <div className="ae-top-bar">
         <div className="ae-container">
           <div className="ae-top-links">
-            
+
             {/* Admin panel removed: admin link hidden */}
           </div>
         </div>
@@ -133,14 +136,46 @@ export default function CompCabecera({ totalProductos = 0 }) {
         <div className="ae-container">
           <div className="ae-header-content">
             {/* Logo */}
-            <Link to="/" className="ae-logo">
+            <Link to="/" className={`ae-logo ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}>
               <span className="ae-logo-main">Tienda</span>
               <span className="ae-logo-plus">+</span>
             </Link>
 
+            {/* Mobile Search Toggle */}
+            <button
+              className={`ae-mobile-search-toggle ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              aria-label="Buscar"
+            >
+              <svg className="ae-search-icon-mobile" viewBox="0 0 24 24">
+                <path d="M11 3a8 8 0 016 13M21 21l-4-4" />
+              </svg>
+            </button>
+
             {/* Buscador */}
-            <form className="ae-search-form" onSubmit={(e)=>{e.preventDefault(); if (searchQuery.trim()) navigate(`/buscar?q=${encodeURIComponent(searchQuery.trim())}`)}}>
+            <form
+              className={`ae-search-form ${mobileSearchOpen ? 'mobile-active' : ''}`}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                  navigate(`/buscar?q=${encodeURIComponent(searchQuery.trim())}`);
+                  setMobileSearchOpen(false);
+                }
+              }}
+            >
               <div className="ae-search-container">
+                {mobileSearchOpen && (
+                  <button
+                    type="button"
+                    className="ae-mobile-close-search"
+                    onClick={() => setMobileSearchOpen(false)}
+                  >
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                )}
                 <input
                   type="text"
                   className="ae-search-input"
@@ -148,6 +183,7 @@ export default function CompCabecera({ totalProductos = 0 }) {
                   value={searchQuery}
                   onChange={(e) => setTerm(e.target.value)}
                   aria-label="Buscar productos"
+                  autoFocus={mobileSearchOpen}
                 />
                 <button type="submit" className="ae-search-button ae-search-animated" aria-label="Buscar">
                   <svg className="ae-search-icon" viewBox="0 0 24 24">
@@ -158,9 +194,9 @@ export default function CompCabecera({ totalProductos = 0 }) {
             </form>
 
             {/* Menú de usuario */}
-            <div className="ae-user-menu">
+            <div className={`ae-user-menu ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}>
               {user ? (
-                <div 
+                <div
                   className={`ae-user-profile ${showDropdown ? 'open' : ''}`}
                   ref={profileRef}
                 >
@@ -197,7 +233,7 @@ export default function CompCabecera({ totalProductos = 0 }) {
                         Mis pedidos
                       </Link>
                       <div className="ae-dropdown-divider"></div>
-                      <button 
+                      <button
                         className="ae-dropdown-item ae-logout-btn"
                         onClick={handleLogout}
                         aria-label="Cerrar sesión"
@@ -213,14 +249,14 @@ export default function CompCabecera({ totalProductos = 0 }) {
                   )}
                 </div>
               ) : (
-                <div className="ae-auth-buttons">
+                <div className={`ae-auth-buttons ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}>
                   <Link to="/login" className="ae-login-btn">Ingresar</Link>
                   <Link to="/registro" className="ae-register-btn">Registrarse</Link>
                 </div>
               )}
 
               {/* Carrito */}
-              <Link to="/carrito" className="ae-cart" aria-label={`Carrito: Tienes ${totalProductosCount} productos`}>
+              <Link to="/carrito" className={`ae-cart ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`} aria-label={`Carrito: Tienes ${totalProductosCount} productos`}>
                 <svg className="ae-cart-icon" viewBox="0 0 24 24">
                   <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />

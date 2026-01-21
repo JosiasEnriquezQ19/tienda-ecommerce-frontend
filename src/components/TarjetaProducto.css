@@ -1,4 +1,21 @@
-.producto-card { position: relative; overflow: hidden; }
+.producto-card { 
+  position: relative; 
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.producto-card-clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto-card-clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
 .producto-body .precio { font-weight: 700; color: #ff6a00; margin-bottom: 6px; }
 .rating { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: #374151; }
 .rating-stars { display: inline-block; line-height: 1; }
