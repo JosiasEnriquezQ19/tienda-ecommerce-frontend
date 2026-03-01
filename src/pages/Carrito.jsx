@@ -17,6 +17,14 @@ export default function Carrito() {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const navigate = useNavigate();
   
+  const formatPrice = (price) => {
+    const num = Number(price || 0);
+    if (num % 1 === 0) {
+      return num.toLocaleString('es-PE');
+    }
+    return num.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+  
   // Calcular totales solo de los seleccionados
   const filteredItems = selectedItems.length > 0 ? items.filter(it => selectedItems.includes(it.uid ?? it.productoId ?? it.servidorId)) : items;
   const subtotal = filteredItems.reduce((sum, item) => sum + ((Number(item.precio) || 0) * (Number(item.cantidad) || 0)), 0);
@@ -160,8 +168,10 @@ export default function Carrito() {
   }, [user]);
 
   // Actualizar cantidad de un producto (acepta productoId o servidorId)
-  const handleQuantityChange = (id, newQuantity) => {
-    const quantity = Math.max(1, Math.min(100, parseInt(newQuantity) || 1));
+  const handleQuantityChange = (item, newQuantity) => {
+    const stock = Number(item.stock) || 999;
+    const quantity = Math.max(1, Math.min(stock, parseInt(newQuantity) || 1));
+    const id = item.uid ?? item.servidorId ?? item.productoId;
     updateQuantity(id, quantity);
   };
 
@@ -228,7 +238,11 @@ export default function Carrito() {
                   </div>
                   <div className="ae-item-details">
                     <div className="ae-item-header" style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                      <h3 className="ae-item-name" style={{margin:0}}>
+                      <h3 
+                        className="ae-item-name" 
+                        style={{margin:0, cursor: 'pointer', color: '#1f2937'}}
+                        onClick={() => navigate(`/producto/${item.productoId ?? item.id ?? item.ProductoId}`)}
+                      >
                         {item.nombre || item.name || `Producto ${item.productoId ?? item.id ?? item.ProductoId}`}
                       </h3>
                       <button 
@@ -240,21 +254,14 @@ export default function Carrito() {
                         </svg>
                       </button>
                     </div>
-                    <button
-                      className="ae-item-viewmore"
-                      onClick={() => navigate(`/producto/${item.productoId ?? item.id ?? item.ProductoId}`)}
-                    >
-                      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{marginRight:'6px',verticalAlign:'middle'}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
-                      Ver más
-                    </button>
                     <div className="ae-item-price">
-                      S/ {(item.precio || 0).toFixed(2)}
+                      S/ {formatPrice(item.precio)}
                     </div>
                     <div className="ae-item-actions">
                       <div className="ae-quantity-selector">
                         <button 
                           className="ae-quantity-btn"
-                          onClick={() => handleQuantityChange(itemId, (item.cantidad || 1) - 1)}
+                          onClick={() => handleQuantityChange(item, (item.cantidad || 1) - 1)}
                           disabled={item.cantidad <= 1}
                         >
                           -
@@ -262,20 +269,21 @@ export default function Carrito() {
                         <input
                           type="number"
                           min="1"
-                          max="100"
+                          max={item.stock || 999}
                           value={item.cantidad || 1}
-                          onChange={(e) => handleQuantityChange(itemId, e.target.value)}
+                          onChange={(e) => handleQuantityChange(item, e.target.value)}
                           className="ae-quantity-input"
                         />
                         <button 
                           className="ae-quantity-btn"
-                          onClick={() => handleQuantityChange(itemId, (item.cantidad || 1) + 1)}
+                          onClick={() => handleQuantityChange(item, (item.cantidad || 1) + 1)}
+                          disabled={item.cantidad >= (item.stock || 999)}
                         >
                           +
                         </button>
                       </div>
                       <div className="ae-item-total">
-                        S/ {((item.precio || 0) * (item.cantidad || 1)).toFixed(2)}
+                        S/ {formatPrice((item.precio || 0) * (item.cantidad || 1))}
                       </div>
                     </div>
                   </div>
@@ -290,21 +298,21 @@ export default function Carrito() {
               <h3>Resumen de compra</h3>
               <div className="ae-summary-row">
                 <span>Subtotal</span>
-                <span>S/ {subtotal.toFixed(2)}</span>
+                <span>S/ {formatPrice(subtotal)}</span>
               </div>
               <div className="ae-summary-row">
                 <span>Envío</span>
-                <span>{envio === 0 ? 'Gratis' : `S/ ${envio.toFixed(2)}`}</span>
+                <span>{envio === 0 ? 'Gratis' : `S/ ${formatPrice(envio)}`}</span>
               </div>
               {/* Impuestos ocultos porque no aplica facturación electrónica */}
               {/* <div className="ae-summary-row">
                 <span>Impuestos</span>
-                <span>S/ {impuestos.toFixed(2)}</span>
+                <span>S/ {formatPrice(impuestos)}</span>
               </div> */}
               <div className="ae-summary-divider"></div>
               <div className="ae-summary-row ae-total">
                 <span>Total</span>
-                <span>S/ {total.toFixed(2)}</span>
+                <span>S/ {formatPrice(total)}</span>
               </div>
               {/* Selección de dirección */}
               <div className="ae-shipping-section">

@@ -164,10 +164,18 @@ export default function ListaProductos() {
 
   // Client-side filtering as fallback
   if (Array.isArray(filters.categorias) && filters.categorias.length) {
-    // keep items whose normalized categoria is included in the selected list
-    productosAMostrar = productosAMostrar.filter(p => filters.categorias.includes(p.categoria));
+    // keep items whose normalized categoria OR raw categoria is included in the selected list
+    productosAMostrar = productosAMostrar.filter(p => 
+      filters.categorias.includes(p.categoria) || 
+      filters.categorias.includes(p._rawCategoria) ||
+      filters.categorias.some(cat => String(p._rawCategoria).toLowerCase() === String(cat).toLowerCase())
+    );
   } else if (filters.categoria) {
-    productosAMostrar = productosAMostrar.filter(p => String(p.categoria) === String(filters.categoria));
+    productosAMostrar = productosAMostrar.filter(p => 
+      String(p.categoria) === String(filters.categoria) ||
+      String(p._rawCategoria) === String(filters.categoria) ||
+      String(p._rawCategoria).toLowerCase() === String(filters.categoria).toLowerCase()
+    );
   }
 
   if (filters.precioMax) {

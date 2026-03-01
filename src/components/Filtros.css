@@ -79,6 +79,7 @@
   user-select: none;
   border-radius: 10px;
   transition: background 180ms ease, transform 160ms ease;
+  gap: 8px;
 }
 
 .ae-category-checkbox input {
@@ -126,6 +127,51 @@
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+/* Imagen de categoría */
+.ae-category-image {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background-color: rgba(255,255,255,0.9);
+  flex-shrink: 0;
+}
+
+.ae-category-name {
+  flex: 1;
+}
+
+/* Botón Ver más categorías */
+.ae-show-more-categories {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ae-primary-dark);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.ae-show-more-categories:hover {
+  background: rgba(255,79,79,0.08);
+  border-color: var(--ae-primary);
+  transform: translateY(-1px);
+}
+
+/* Loading de categorías */
+.ae-category-loading {
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ae-text-light);
+  font-style: italic;
 }
 
 /* Rango de precios */

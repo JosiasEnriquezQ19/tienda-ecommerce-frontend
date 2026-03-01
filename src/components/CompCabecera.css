@@ -41,22 +41,18 @@
   border-bottom: 1px solid rgba(16, 24, 40, 0.08);
   border-radius: 0;
   box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1100;
   overflow: visible;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .ae-header.ae-header-hidden {
   transform: translateY(-100%);
-  pointer-events: none;
-}
-
-/* Clase para ocultar el header al hacer scroll */
-.ae-header-hidden {
-  transform: translateY(-100%);
-  opacity: 0;
 }
 
 /* Barra superior - Minimalista */
@@ -124,15 +120,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
-}
-
-.ae-header {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-}
-
-.ae-header.ae-header-hidden {
-  transform: translateY(-100%);
 }
 
 .ae-logo-plus {
@@ -591,6 +578,7 @@
 .ae-main-content {
   flex: 1;
   padding: 32px 0;
+  padding-top: 160px;
   background: var(--hd-background);
 }
 
@@ -723,6 +711,12 @@
 
 @media (max-width: 480px) {
 
+  .ae-main-content {
+    padding-top: 75px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
   /* Eliminar cualquier margen del body y html */
   body,
   html {
@@ -829,6 +823,11 @@
 
 /* Mobile Search Redesign (Tablets & Mobile) */
 @media (max-width: 768px) {
+  
+  .ae-main-content {
+    padding-top: 130px;
+  }
+  
   .ae-mobile-search-toggle {
     display: flex;
     align-items: center;

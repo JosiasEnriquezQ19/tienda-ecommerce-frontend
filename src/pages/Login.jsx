@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 import './Login.css';
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, googleLogin } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -15,15 +16,32 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
+
     try {
       await login(email, password);
       navigate('/');
-    } catch (e) { 
+    } catch (e) {
       setError(e.response?.data?.message || e.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleGoogleSuccess(credentialResponse) {
+    setLoading(true);
+    setError(null);
+    try {
+      await googleLogin(credentialResponse);
+      navigate('/');
+    } catch (e) {
+      setError(e.message || 'Error al iniciar sesión con Google');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleGoogleError() {
+    setError('No se pudo iniciar sesión con Google. Inténtalo de nuevo.');
   }
 
   return (
@@ -36,7 +54,7 @@ export default function Login() {
         {error && (
           <div className="ae-login-error">
             <svg viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
             </svg>
             <span>{error}</span>
           </div>
@@ -91,13 +109,24 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Redes sociales */}
+        {/* Google Login */}
         <div className="ae-social-login">
           <div className="ae-divider">
             <span>O inicia sesión con</span>
           </div>
-          
-          
+
+          <div className="ae-google-btn-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              text="signin_with"
+              shape="rectangular"
+              theme="outline"
+              size="large"
+              width="100%"
+              locale="es"
+            />
+          </div>
         </div>
 
         {/* Registro */}

@@ -383,6 +383,24 @@ html, body {
   border-color: #3b5998;
 }
 
+/* Google OAuth button wrapper */
+.ae-google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.ae-google-btn-wrapper > div {
+  width: 100% !important;
+  display: flex;
+  justify-content: center;
+}
+
+.ae-google-btn-wrapper iframe {
+  margin: 0 auto;
+}
+
 /* Signup link - Better styling */
 .ae-signup-link {
   text-align: center;

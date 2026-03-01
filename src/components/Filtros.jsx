@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Filtros.css';
+import { API } from '../api';
 
 export default function Filtros({ onFilter, onClose }) {
   const [priceRange, setPriceRange] = useState([0, 1000]);
@@ -9,15 +10,32 @@ export default function Filtros({ onFilter, onClose }) {
   const [tempRating, setTempRating] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showFilterResults, setShowFilterResults] = useState(false);
-
-  // Canonical categories for the store
-  const categories = [
-    'Tecnologia',
-    'Audífonos',
-    'Laptops',
-    'Celulares',
-    'Otros'
-  ];
+  const [categories, setCategories] = useState([]);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  
+  // Cargar categorías desde la base de datos
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const response = await fetch(`${API}/categorias?estado=Activo`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Categorías cargadas:', data);
+          setCategories(data);
+        } else {
+          console.error('Error en la respuesta:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error al cargar categorías:', error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
   
   // Efecto para detectar si es dispositivo móvil
   useEffect(() => {
@@ -35,12 +53,12 @@ export default function Filtros({ onFilter, onClose }) {
     setTempSelectedCategories([...selectedCategories]);
   }, []);
 
-  const handleCategoryChange = (category) => {
+  const handleCategoryChange = (categoryName) => {
     let newCategories;
-    if ((isMobile ? tempSelectedCategories : selectedCategories).includes(category)) {
-      newCategories = (isMobile ? tempSelectedCategories : selectedCategories).filter(c => c !== category);
+    if ((isMobile ? tempSelectedCategories : selectedCategories).includes(categoryName)) {
+      newCategories = (isMobile ? tempSelectedCategories : selectedCategories).filter(c => c !== categoryName);
     } else {
-      newCategories = [...(isMobile ? tempSelectedCategories : selectedCategories), category];
+      newCategories = [...(isMobile ? tempSelectedCategories : selectedCategories), categoryName];
     }
     
     if (isMobile) {
@@ -113,19 +131,40 @@ export default function Filtros({ onFilter, onClose }) {
 
       <div className="ae-filter-section">
         <h4 className="ae-filter-section-title">Categorías</h4>
-        <div className="ae-category-filters">
-          {categories.map(category => (
-            <label key={category} className="ae-category-checkbox">
-              <input
-                type="checkbox"
-                checked={isMobile ? tempSelectedCategories.includes(category) : selectedCategories.includes(category)}
-                onChange={() => handleCategoryChange(category)}
-              />
-              <span className="ae-checkmark"></span>
-              {category}
-            </label>
-          ))}
-        </div>
+        {loadingCategories ? (
+          <div className="ae-category-loading">Cargando categorías...</div>
+        ) : (
+          <>
+            <div className="ae-category-filters">
+              {(showAllCategories ? categories : categories.slice(0, 5)).map(category => (
+                <label key={category.categoriaId} className="ae-category-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={isMobile ? tempSelectedCategories.includes(category.nombre) : selectedCategories.includes(category.nombre)}
+                    onChange={() => handleCategoryChange(category.nombre)}
+                  />
+                  <span className="ae-checkmark"></span>
+                  {category.imagenUrl && (
+                    <img 
+                      src={category.imagenUrl} 
+                      alt={category.nombre}
+                      className="ae-category-image"
+                    />
+                  )}
+                  <span className="ae-category-name">{category.nombre}</span>
+                </label>
+              ))}
+            </div>
+            {categories.length > 5 && (
+              <button 
+                className="ae-show-more-categories"
+                onClick={() => setShowAllCategories(!showAllCategories)}
+              >
+                {showAllCategories ? 'Ver menos' : `Ver más (${categories.length - 5})`}
+              </button>
+            )}
+          </>
+        )}
       </div>
 
       <div className="ae-filter-section">

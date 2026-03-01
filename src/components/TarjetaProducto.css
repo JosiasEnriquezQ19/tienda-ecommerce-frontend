@@ -17,11 +17,55 @@
 }
 
 .producto-body .precio { font-weight: 700; color: #ff6a00; margin-bottom: 6px; }
-.rating { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: #374151; }
-.rating-stars { display: inline-block; line-height: 1; }
-.star { font-size: 1rem; margin-right: 2px; display: inline-block; }
-.star.full { color: #f59e0b; }
-.star.half { color: #f59e0b; position: relative; }
-.star.half::after { content: '★'; color: rgba(0,0,0,0.12); position: absolute; left: 0; width: 50%; overflow: hidden; }
-.star.empty { color: #d1d5db; }
-.rating-value { font-size: 0.9rem; color: #6b7280; }
+.rating { 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
+  font-size: 13px; 
+  color: #374151; 
+  margin-bottom: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.rating-number {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 400;
+}
+.rating-stars { 
+  display: flex; 
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+  background: transparent;
+}
+.star-filled {
+  color: #3483fa;
+  font-size: 14px;
+}
+.star-half {
+  color: #3483fa;
+  font-size: 14px;
+}
+.star-empty {
+  color: #ccc;
+  font-size: 14px;
+}
+.rating-count { 
+  font-size: 13px; 
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .star-filled,
+  .star-half,
+  .star-empty {
+    font-size: 11px;
+  }
+  
+  .rating-number,
+  .rating-count {
+    font-size: 11px;
+  }
+}

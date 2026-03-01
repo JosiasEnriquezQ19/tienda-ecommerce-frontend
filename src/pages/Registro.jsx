@@ -3,23 +3,24 @@ import './Login.css'
 import './register-mobile.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../auth/AuthContext'
+import { GoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
 import { API } from '../api'
 
 export default function Registro() {
-  const { register } = useContext(AuthContext)
+  const { register, googleLogin } = useContext(AuthContext)
   const [form, setForm] = useState({ email: '', password: '', nombre: '', apellido: '', telefono: '' })
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 480)
   const navigate = useNavigate()
-  
+
   // Detector de tamaño de pantalla para aplicar clase compact-form
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 480)
     }
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -35,13 +36,13 @@ export default function Registro() {
       return true; // Por defecto, asumimos que es válido
     } catch (error) {
       console.log('Error validando email:', error.message);
-      
+
       // Si el endpoint no existe o hay otro error, asumimos que el email es válido
       if (error.response && error.response.status === 404) {
         // El endpoint existe pero el email no está registrado
         return true;
       }
-      
+
       // Intentamos otra ruta alternativa solo si el primer intento falló con 404 o 400
       if (error.response && (error.response.status === 404 || error.response.status === 400)) {
         try {
@@ -54,7 +55,7 @@ export default function Registro() {
           console.log('Error en ruta alternativa para validar email:', err.message);
         }
       }
-      
+
       // Si no podemos verificar, simplemente continuamos con el registro
       console.log('No se pudo validar el email, asumiendo que es válido');
       return true;
@@ -63,7 +64,7 @@ export default function Registro() {
 
   async function validateTelefono(telefono) {
     if (!telefono) return true; // Si no hay teléfono, es válido
-    
+
     try {
       console.log('Intentando validar teléfono en:', `${API}/Usuarios/verificar-telefono?telefono=${encodeURIComponent(telefono)}`);
       const response = await axios.get(`${API}/Usuarios/verificar-telefono?telefono=${encodeURIComponent(telefono)}`);
@@ -83,21 +84,21 @@ export default function Registro() {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
-    
+
     try {
       console.log('Iniciando proceso de registro para:', form.email);
-      
+
       // Validación de formato básico
       if (!form.email || !form.email.includes('@')) {
         setError("Por favor ingresa un correo electrónico válido");
         return;
       }
-      
+
       if (!form.password || form.password.length < 6) {
         setError("La contraseña debe tener al menos 6 caracteres");
         return;
       }
-      
+
       if (!form.nombre || !form.apellido) {
         setError("Nombre y apellido son obligatorios");
         return;
@@ -127,7 +128,7 @@ export default function Registro() {
           setIsLoading(false);
           return;
         }
-        
+
         // Validar teléfono solo si se proporcionó
         if (form.telefono) {
           const telefonoValido = await validateTelefono(form.telefono);
@@ -141,15 +142,15 @@ export default function Registro() {
         console.warn('Error en validación, continuando con el registro:', validationError.message);
         // Continuamos con el registro y dejamos que el backend maneje las validaciones
       }
-      
+
       // Registrar al usuario
-      console.log('Enviando datos de registro:', { 
-        email: form.email, 
-        nombre: form.nombre, 
+      console.log('Enviando datos de registro:', {
+        email: form.email,
+        nombre: form.nombre,
         apellido: form.apellido,
         telefono: form.telefono ? 'Sí (oculto por privacidad)' : 'No proporcionado'
       });
-      
+
       await register(form);
       console.log('Registro exitoso, redirigiendo a inicio');
       navigate('/');
@@ -175,91 +176,91 @@ export default function Registro() {
       <div className="ae-login-card">
         <h1 className="ae-login-title">Crear cuenta</h1>
         <p className="ae-login-subtitle">Únete a nosotros y disfruta de beneficios exclusivos</p>
-        
+
         {/* Mensaje de error */}
         {error && (
           <div className="ae-login-error">
             <svg viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
             </svg>
             <span>{String(error)}</span>
           </div>
         )}
-        
+
         {/* Formulario */}
         <form onSubmit={submit} className={`ae-login-form ${isMobile ? 'compact-form' : ''}`}>
           <div className="ae-form-row">
             <div className="ae-form-group">
               <label className="ae-form-label">Nombre</label>
-              <input 
-                type="text" 
-                className="ae-form-input" 
-                value={form.nombre} 
-                onChange={e => setForm({...form, nombre: e.target.value})} 
+              <input
+                type="text"
+                className="ae-form-input"
+                value={form.nombre}
+                onChange={e => setForm({ ...form, nombre: e.target.value })}
                 placeholder="Tu nombre"
                 required
               />
             </div>
-            
+
             <div className="ae-form-group">
               <label className="ae-form-label">Apellido</label>
-              <input 
-                type="text" 
-                className="ae-form-input" 
-                value={form.apellido} 
-                onChange={e => setForm({...form, apellido: e.target.value})} 
+              <input
+                type="text"
+                className="ae-form-input"
+                value={form.apellido}
+                onChange={e => setForm({ ...form, apellido: e.target.value })}
                 placeholder="Tu apellido"
                 required
               />
             </div>
           </div>
-          
+
           <div className="ae-form-group">
             <label className="ae-form-label">Correo electrónico</label>
-            <input 
-              type="email" 
-              className="ae-form-input" 
-              value={form.email} 
-              onChange={e => setForm({...form, email: e.target.value})} 
+            <input
+              type="email"
+              className="ae-form-input"
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
               placeholder="ejemplo@correo.com"
               required
             />
           </div>
-          
+
           <div className="ae-form-group">
             <label className="ae-form-label">Teléfono</label>
-            <input 
-              type="tel" 
-              className="ae-form-input" 
-              value={form.telefono} 
-              onChange={e => setForm({...form, telefono: e.target.value})} 
+            <input
+              type="tel"
+              className="ae-form-input"
+              value={form.telefono}
+              onChange={e => setForm({ ...form, telefono: e.target.value })}
               placeholder="+51 999 999 999"
               required
             />
           </div>
-          
+
           <div className="ae-form-group">
             <label className="ae-form-label">Contraseña</label>
-            <input 
-              type="password" 
-              className="ae-form-input" 
-              value={form.password} 
-              onChange={e => setForm({...form, password: e.target.value})} 
+            <input
+              type="password"
+              className="ae-form-input"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
               placeholder="Mínimo 6 caracteres"
               minLength="6"
               required
             />
           </div>
-          
+
           <div className="ae-terms-checkbox">
             <label className="ae-remember-me">
               <input type="checkbox" required />
               <span>Acepto los <a href="/terminos" target="_blank">términos</a> y <a href="/privacidad" target="_blank">política de privacidad</a></span>
             </label>
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             className="ae-login-button"
             disabled={isLoading}
           >
@@ -273,7 +274,38 @@ export default function Registro() {
             ) : 'Crear cuenta'}
           </button>
         </form>
-        
+
+        {/* Google Sign Up */}
+        <div className="ae-social-login">
+          <div className="ae-divider">
+            <span>O regístrate con</span>
+          </div>
+
+          <div className="ae-google-btn-wrapper">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                setIsLoading(true)
+                setError(null)
+                try {
+                  await googleLogin(credentialResponse)
+                  navigate('/')
+                } catch (e) {
+                  setError(e.message || 'Error al registrarse con Google')
+                } finally {
+                  setIsLoading(false)
+                }
+              }}
+              onError={() => setError('No se pudo conectar con Google. Inténtalo de nuevo.')}
+              text="signup_with"
+              shape="rectangular"
+              theme="outline"
+              size="large"
+              width="100%"
+              locale="es"
+            />
+          </div>
+        </div>
+
         {/* Enlace a login */}
         <div className="ae-signup-link">
           ¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link>

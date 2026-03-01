@@ -16,7 +16,8 @@ export default function CompCabecera({ totalProductos = 0 }) {
   const lastScrollY = useRef(0);
   // We still need state for visibility to trigger re-renders
   const location = useLocation();
-  const totalProductosCount = Array.isArray(items) ? items.reduce((s, it) => s + (Number(it.cantidad) || 0), 0) : 0
+  // Contar productos únicos, no la suma de cantidades
+  const totalProductosCount = Array.isArray(items) ? items.length : 0
 
   // Efecto para controlar la visibilidad del header al hacer scroll
   useEffect(() => {
@@ -25,15 +26,12 @@ export default function CompCabecera({ totalProductos = 0 }) {
 
       const currentScrollY = window.scrollY;
 
-      // Threshold to prevent jitter (e.g., 5px difference)
-      if (Math.abs(currentScrollY - lastScrollY.current) < 5) return;
-
-      // If scrolling down and past 80px, hide header
-      if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
-        // Scrolling DOWN > 80px -> Hide
+      // If scrolling down and past 100px, hide header
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // Scrolling DOWN > 100px -> Hide
         setHeaderVisible(false);
-      } else {
-        // If scrolling up or at top, show header
+      } else if (currentScrollY < lastScrollY.current) {
+        // If scrolling up, show header
         // Scrolling UP -> Show
         setHeaderVisible(true);
       }

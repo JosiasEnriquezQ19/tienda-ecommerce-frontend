@@ -15,6 +15,13 @@
   padding: 40px 0 20px;
   margin-top: 60px;
   font-family: 'Arial', sans-serif;
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .ae-footer {
+    display: block !important;
+  }
 }
 
 .ae-container {

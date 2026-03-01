@@ -23,6 +23,7 @@ export default function DetalleProducto() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState('descripcion');
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   // Comentarios
   const [comentarios, setComentarios] = useState([]);
   const [comentariosLoading, setComentariosLoading] = useState(true);
@@ -119,6 +120,14 @@ export default function DetalleProducto() {
     return stars;
   }
 
+  const formatPrice = (price) => {
+    const num = Number(price || 0);
+    if (num % 1 === 0) {
+      return num.toLocaleString('es-PE');
+    }
+    return num.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const onAddToCart = () => {
     const item = { 
       productoId: safeGet(producto, 'productoId', 'ProductoId', 'id'),
@@ -126,7 +135,8 @@ export default function DetalleProducto() {
       precio: safeGet(producto, 'precio', 'Precio') || 0,
       cantidad,
       imagen: safeGet(producto, 'imagenUrl', 'ImagenUrl') || 'https://via.placeholder.com/600x400',
-      descripcion: safeGet(producto, 'descripcion', 'Descripcion') || ''
+      descripcion: safeGet(producto, 'descripcion', 'Descripcion') || '',
+      stock: safeGet(producto, 'stock', 'Stock') || 0
     };
     addItem(item);
   };
@@ -232,7 +242,8 @@ export default function DetalleProducto() {
   const imagenes = safeGet(producto, 'imagenes', 'Imagenes') || [
     safeGet(producto, 'imagenUrl', 'ImagenUrl') || 'https://via.placeholder.com/600x400'
   ];
-  const categoria = safeGet(producto, 'categoria', 'Categoria');
+  const categoriaId = safeGet(producto, 'categoria', 'Categoria', 'categoriaId', 'CategoriaId');
+  const categoriaNombre = safeGet(producto, 'categoriaNombre', 'CategoriaNombre', 'categoria_nombre') || 'Sin categoría';
   const marca = safeGet(producto, 'marca', 'Marca') || 'Genérico';
   const especificaciones = safeGet(producto, 'especificaciones', 'Especificaciones') || {};
   
@@ -254,7 +265,7 @@ export default function DetalleProducto() {
                 <a href="/" className="ae-breadcrumb-link">Inicio</a>
               </li>
               <li className="ae-breadcrumb-item">
-                <a href={`/categoria/${categoria}`} className="ae-breadcrumb-link">{categoria || 'Productos'}</a>
+                <a href={`/categoria/${categoriaId}`} className="ae-breadcrumb-link">{categoriaNombre}</a>
               </li>
               <li className="ae-breadcrumb-item active" aria-current="page">{nombre}</li>
             </ol>
@@ -268,18 +279,22 @@ export default function DetalleProducto() {
           {/* Product Images */}
           <div className="ae-product-gallery">
             <div className="ae-main-image">
+              <span className="ae-image-counter">{selectedImage + 1} / {imagenes.length}</span>
               <div className="ae-zoom-container">
-                <Zoom>
-                  <img 
-                    src={imagenes[selectedImage]} 
-                    alt={nombre} 
-                    className="ae-product-image"
+                <img 
+                  src={imagenes[selectedImage]} 
+                  alt={nombre} 
+                  className="ae-product-image"
+                />
+              </div>
+              <div className="ae-image-dots">
+                {imagenes.map((_, idx) => (
+                  <span 
+                    key={idx}
+                    className={`ae-dot ${selectedImage === idx ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(idx)}
                   />
-                </Zoom>
-                {/* <div className="ae-zoom-hint">
-                  <FaSearchPlus /> 
-                  <span>Haz clic para ampliar</span>
-                </div> */}
+                ))}
               </div>
             </div>
             <div className="ae-thumbnails">
@@ -299,24 +314,40 @@ export default function DetalleProducto() {
           <div className="ae-product-info">
             <div className="ae-product-header">
               <h1 className="ae-product-title">{nombre}</h1>
-              <div className="ae-product-meta">
-                <div className="ae-rating">
-                  {renderRatingStars(rating)}
-                  <span className="ae-review-count">({comentarios.length} opiniones)</span>
-                </div>
-                <div className="ae-sku">SKU: {prodId}</div>
-              </div>
+            </div>
+
+            <div className="ae-product-rating">
+              <span className="ae-rating-number">{rating.toFixed(1)}</span>
+              {renderRatingStars(rating)}
+              <span className="ae-review-count">({comentarios.length})</span>
             </div>
 
             <div className="ae-price-section">
               {descuento > 0 && (
-                <div className="ae-discount-badge">-{descuento}%</div>
+                <>
+                  <div className="ae-price-original-line">
+                    <span className="ae-price-original">S/ {formatPrice(precioOriginal)}</span>
+                  </div>
+                  <div className="ae-price-current-line">
+                    <span className="ae-price-current">S/ {formatPrice(precio)}</span>
+                    <span className="ae-discount-badge">{descuento}% OFF</span>
+                  </div>
+                </>
               )}
-              <div className="ae-price-current">S/ {Number(precio).toFixed(2)}</div>
-              {descuento > 0 && (
-                <div className="ae-price-original">S/ {Number(precioOriginal).toFixed(2)}</div>
+              {descuento === 0 && (
+                <div className="ae-price-current-line">
+                  <span className="ae-price-current">S/ {formatPrice(precio)}</span>
+                </div>
               )}
             </div>
+
+            {descuento > 0 && (
+              <div className="ae-installments">
+                <span className="ae-installments-text">
+                  6 cuotas de S/ {formatPrice(precio / 6)} <span className="ae-no-interest">sin interés</span>
+                </span>
+              </div>
+            )}
 
             <div className="ae-shipping-info">
               <FaTruck className="ae-shipping-icon" />
@@ -368,7 +399,6 @@ export default function DetalleProducto() {
               >
                 Comprar ahora
               </button>
-              {/* Wishlist (me gusta) eliminado */}
             </div>
 
             <div className="ae-payment-methods">
@@ -377,33 +407,6 @@ export default function DetalleProducto() {
                 <img src="https://logosenvector.com/logo/img/yape-37283.png" alt="Yape" />
                 <img src="https://images.seeklogo.com/logo-png/38/1/plin-logo-png_seeklogo-386806.png" alt="Plin" />
                 <img src="https://cdn-icons-png.flaticon.com/512/4140/4140803.png" alt="transferencia bancaria" />
-              </div>
-              <div className="ae-payment-details">
-                <p>Aceptamos Yape, Plin o transferencia bancaria</p>
-              </div>
-            </div>
-
-            <div className="ae-shipping-options">
-              <div className="ae-shipping-option">
-                <FaTruck className="ae-option-icon" />
-                <div>
-                  <div className="ae-option-title">Envío rápido</div>
-                  <div className="ae-option-desc">Recíbelo en 3-7 días</div>
-                </div>
-              </div>
-              <div className="ae-shipping-option">
-                <FaShieldAlt className="ae-option-icon" />
-                <div>
-                  <div className="ae-option-title">Protección al comprador</div>
-                  <div className="ae-option-desc">Garantía de reembolso</div>
-                </div>
-              </div>
-              <div className="ae-shipping-option">
-                <FaExchangeAlt className="ae-option-icon" />
-                <div>
-                  <div className="ae-option-title">Devoluciones</div>
-                  <div className="ae-option-desc">30 días para devolver</div>
-                </div>
               </div>
             </div>
           </div>
@@ -436,7 +439,19 @@ export default function DetalleProducto() {
             {activeTab === 'descripcion' && (
               <div className="ae-product-description">
                 <h3>Descripción del producto</h3>
-                <p>{descripcion}</p>
+                <p>
+                  {descripcion && descripcion.length > 300 && !isDescriptionExpanded
+                    ? `${descripcion.substring(0, 300)}...`
+                    : descripcion}
+                </p>
+                {descripcion && descripcion.length > 300 && (
+                  <button 
+                    className="ae-see-more-btn"
+                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  >
+                    {isDescriptionExpanded ? 'Ver menos' : 'Ver más'}
+                  </button>
+                )}
               </div>
             )}
 
@@ -451,11 +466,11 @@ export default function DetalleProducto() {
                     </tr>
                     <tr>
                       <th>Modelo</th>
-                      <td>{safeGet(producto, 'modelo', 'Modelo') || 'N/A'}</td>
+                      <td>{safeGet(producto, 'modelo', 'Modelo') || 'No especificado'}</td>
                     </tr>
                     <tr>
                       <th>Categoría</th>
-                      <td>{categoria || 'N/A'}</td>
+                      <td>{categoriaNombre}</td>
                     </tr>
                     {Object.entries(especificaciones).map(([key, value]) => (
                       <tr key={key}>
@@ -578,9 +593,9 @@ export default function DetalleProducto() {
                         {renderRatingStars(rRating)}
                       </div>
                       <div className="ae-related-price">
-                        <span className="ae-current-price">S/ {Number(rPrecio).toFixed(2)}</span>
+                        <span className="ae-current-price">S/ {formatPrice(rPrecio)}</span>
                         {rDescuento > 0 && (
-                          <span className="ae-original-price">S/ {Number(rPrecioOriginal).toFixed(2)}</span>
+                          <span className="ae-original-price">S/ {formatPrice(rPrecioOriginal)}</span>
                         )}
                       </div>
                       <div className="ae-related-actions">

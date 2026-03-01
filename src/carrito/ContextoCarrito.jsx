@@ -57,7 +57,8 @@ export function CartProvider({ children }){
             servidorId: si.carritoId ?? si.id,
             // Agregar datos adicionales importantes para mostrar correctamente el producto
             imagen: producto.imagenUrl ?? producto.ImagenUrl ?? producto.imagen ?? producto.Imagen,
-            descripcion: producto.descripcion ?? producto.Descripcion ?? producto.description
+            descripcion: producto.descripcion ?? producto.Descripcion ?? producto.description,
+            stock: producto.stock ?? producto.Stock ?? 999
           }
           return { ...base, uid: String(base.servidorId ?? base.productoId ?? Math.random().toString(36).slice(2) + Date.now()) }
         })
@@ -84,7 +85,8 @@ export function CartProvider({ children }){
                     nombre: producto.nombre ?? producto.Nombre ?? updatedItems[index].nombre,
                     precio: producto.precio ?? producto.Precio ?? updatedItems[index].precio,
                     imagen: producto.imagenUrl ?? producto.ImagenUrl ?? producto.imagen ?? producto.Imagen,
-                    descripcion: producto.descripcion ?? producto.Descripcion ?? producto.description
+                    descripcion: producto.descripcion ?? producto.Descripcion ?? producto.description,
+                    stock: producto.stock ?? producto.Stock ?? 999
                   };
                 }
               } catch (e) {
@@ -131,13 +133,27 @@ export function CartProvider({ children }){
   }
 
   async function addItem(item){
-    // item: { productoId, cantidad, ... }
+    // item: { productoId, cantidad, stock, ... }
     // If user is not logged in, prevent adding and prompt to login
     if(!user){
       try{ alert('Debes iniciar sesión para agregar productos al carrito.') }catch{}
       try{ navigate('/login') }catch{}
       return
     }
+    
+    // Verificar stock disponible
+    const existingItem = items.find(p => String(p.productoId) === String(item.productoId));
+    const currentQuantity = existingItem ? Number(existingItem.cantidad) : 0;
+    const newTotalQuantity = currentQuantity + Number(item.cantidad || 1);
+    const maxStock = Number(item.stock || 999);
+    
+    if (newTotalQuantity > maxStock) {
+      try{ 
+        alert(`No puedes agregar más de ${maxStock} unidades. Ya tienes ${currentQuantity} en el carrito.`);
+      }catch{}
+      return;
+    }
+    
     // proceed with adding locally and showing feedback
     upsertLocal(item)
     try{ showAddedToast(item) }catch{}
@@ -181,13 +197,31 @@ export function CartProvider({ children }){
   }
 
   // update quantity for a cart item (by productoId or servidorId)
-  function updateQuantity(id, newQuantity){
+  async function updateQuantity(id, newQuantity){
+    const item = items.find(p => 
+      String(p.productoId) === String(id) || 
+      String(p.servidorId) === String(id) || 
+      String(p.uid) === String(id)
+    );
+    
+    // Actualizar localmente primero
     setItems(prev => prev.map(p => {
       if(String(p.productoId) === String(id) || String(p.servidorId) === String(id) || String(p.uid) === String(id)){
         return { ...p, cantidad: Number(newQuantity) }
       }
       return p
-    }))
+    }));
+    
+    // Si hay usuario y servidorId, actualizar en el servidor
+    if(user && item?.servidorId){
+      try{
+        await axios.put(`${API}/Carrito/${item.servidorId}`, {
+          cantidad: Number(newQuantity)
+        });
+      }catch(e){
+        console.warn('Error actualizando cantidad en servidor:', e);
+      }
+    }
   }
 
   return (
