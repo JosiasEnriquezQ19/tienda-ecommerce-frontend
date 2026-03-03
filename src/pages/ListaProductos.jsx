@@ -16,7 +16,7 @@ export default function ListaProductos() {
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { term: query } = useCtx(SearchContext);
+  const query = searchParams.get('search') || '';
   const [sortOption, setSortOption] = useState('popular');
 
   // Read category from URL param (if navigated from nav dropdown)

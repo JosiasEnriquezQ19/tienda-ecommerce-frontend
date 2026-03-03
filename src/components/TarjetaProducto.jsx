@@ -54,9 +54,6 @@ export default function TarjetaProducto({ p, product }) {
       className={`producto-card ${!isOculto && !isDescontinuado ? 'producto-card-clickable' : ''}`}
     >
       <div className="producto-media">
-        <button className="producto-wishlist" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} aria-label="Add to wishlist">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-        </button>
         <img src={imagen} alt={nombre} loading="lazy" />
         {destacado && <span className="badge">Oferta</span>}
         {isAgotado && <span className="badge badge-warning">Agotado</span>}

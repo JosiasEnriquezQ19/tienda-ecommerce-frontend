@@ -465,42 +465,106 @@
     height: auto;
     min-height: 100vh;
     padding: 32px 20px;
-    background: linear-gradient(160deg, #f0f0f5 0%, #e8e6f0 100%);
+    background: #ffffff;
   }
 }
 
 @media (max-width: 480px) {
+  .mt-auth-form-box {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+
+  .mt-auth-logo {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+  }
+
+  .mt-auth-logo img {
+    height: 38px;
+  }
+
   .mt-auth-title {
-    font-size: 24px;
+    font-size: 38px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: #111;
   }
 
   .mt-auth-subtitle {
-    font-size: 13px;
-    margin-bottom: 24px;
+    display: none;
   }
 
-  .mt-field-row {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .mt-field-label {
+    font-size: 12px;
+    color: #4b5563;
   }
 
   .mt-field-input {
-    padding: 11px 14px;
+    padding: 16px 20px;
     font-size: 15px;
+    background: #f9fafb;
+    border: none;
+    border-radius: 12px;
   }
 
-  .mt-auth-btn {
-    padding: 12px 20px;
-    font-size: 15px;
+  .mt-password-wrap .mt-field-input {
+    padding-right: 50px;
   }
 
   .mt-auth-options {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 24px;
+    margin-top: 4px;
   }
 
-  .mt-auth-form-box {
-    max-width: 100%;
+  .mt-forgot-link {
+    font-size: 14px;
+    font-weight: 700;
   }
+
+  .mt-auth-btn {
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 12px;
+    margin-top: 0;
+  }
+
+  .mt-auth-switch {
+    margin-top: 40px;
+  }
+}
+
+/* ── Circular Social Login ── */
+.mt-social-logins {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.mt-social-circle-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f9fafb;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.mt-social-circle-btn:hover {
+  background: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.mt-google-icon-circle {
+  width: 24px;
+  height: 24px;
 }

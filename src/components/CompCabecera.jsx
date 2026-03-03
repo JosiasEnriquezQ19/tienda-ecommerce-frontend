@@ -80,11 +80,74 @@ export default function CompCabecera({ totalProductos = 0 }) {
   }, []);
 
   const { term: searchQuery, setTerm } = useCtx(SearchContext);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    if (!searchQuery || searchQuery.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(`${API}/Productos?search=${encodeURIComponent(searchQuery)}`);
+        if (active) {
+          // Filter out hidden/discontinued products if necessary, 
+          // but usually search should show active ones.
+          const visible = res.data.filter(p => p.estado !== 'oculto' && p.estado !== 'descontinuado').slice(0, 6);
+          const withRatings = await Promise.all(visible.map(async (p) => {
+            try {
+              const ratRes = await axios.get(`${API}/productos/${p.productoId}/comentarios/promedio`);
+              return { ...p, rating: ratRes.data.promedio || 0, reviews: ratRes.data.totalComentarios || 0 };
+            } catch {
+              return { ...p, rating: 0, reviews: 0 };
+            }
+          }));
+          setSuggestions(withRatings);
+          setShowSuggestions(withRatings.length > 0);
+        }
+      } catch (e) {
+        if (active) setSuggestions([]);
+      }
+    }, 300);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/');
     setShowDropdown(false);
+  };
+
+  const renderStars = (rat = 0) => {
+    const stars = [];
+    const full = Math.floor(rat);
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <svg key={i} className={`ae-suggest-star ${i <= full ? 'active' : ''}`} viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        </svg>
+      );
+    }
+    return stars;
   };
 
   return (
@@ -93,22 +156,24 @@ export default function CompCabecera({ totalProductos = 0 }) {
         <div className="ae-main-bar">
           <div className="ae-container">
             <div className="ae-header-content">
-              {/* Mobile Hamburger (visible only on mobile via CSS) */}
-              <button
-                className="ae-mobile-menu-btn"
-                onClick={() => setMobileNavOpen(true)}
-                aria-label="Abrir menú"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-              </button>
+              {/* Mobile: hamburger + logo grouped together */}
+              <div className="ae-header-left">
+                <button
+                  className="ae-mobile-menu-btn"
+                  onClick={() => setMobileNavOpen(true)}
+                  aria-label="Abrir menú"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
 
-              {/* Logo */}
-              <Link to="/" className={`ae-logo ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}>
-                <img src={logoImg} alt="MiTienda+" className="ae-logo-img" style={{ height: '32px', width: 'auto' }} />
-              </Link>
+                {/* Logo */}
+                <Link to="/" className="ae-logo">
+                  <img src={logoImg} alt="MiTienda+" className="ae-logo-img" />
+                </Link>
+              </div>
 
               {/* ── Navigation ── */}
-              <nav className={`ae-nav ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}>
+              <nav className="ae-nav">
                 <div className="ae-nav-item ae-nav-dropdown">
                   <span className="ae-nav-link ae-nav-link-dropdown">
                     Categorías
@@ -136,35 +201,83 @@ export default function CompCabecera({ totalProductos = 0 }) {
               </nav>
 
               {/* Buscador */}
-              <form
-                className={`ae-search-form ${mobileSearchOpen ? 'mobile-active' : ''}`}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (searchQuery.trim()) {
-                    navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
-                    setMobileSearchOpen(false);
-                  }
-                }}
-              >
-                <div className="ae-search-container">
-                  <input
-                    type="text"
-                    className="ae-search-input"
-                    placeholder="Buscar productos, marcas y más..."
-                    value={searchQuery}
-                    onChange={(e) => setTerm(e.target.value)}
-                    aria-label="Buscar productos"
-                  />
-                  <button type="submit" className="ae-search-button" aria-label="Buscar">
-                    <svg className="ae-search-icon" viewBox="0 0 24 24">
-                      <path d="M11 3a8 8 0 016 13M21 21l-4-4" />
-                    </svg>
-                  </button>
-                </div>
-              </form>
+              <div className={`ae-search-wrapper ${mobileSearchOpen ? 'mobile-active' : ''}`} ref={searchRef}>
+                <form
+                  className="ae-search-form"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (searchQuery.trim()) {
+                      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+                      setMobileSearchOpen(false);
+                      setShowSuggestions(false);
+                    }
+                  }}
+                >
+                  <div className="ae-search-container">
+                    <input
+                      type="text"
+                      className="ae-search-input"
+                      placeholder="Search Product"
+                      value={searchQuery}
+                      onChange={(e) => setTerm(e.target.value)}
+                      onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                      aria-label="Buscar productos"
+                    />
+                    <button type="submit" className="ae-search-button" aria-label="Buscar">
+                      <svg className="ae-search-icon" viewBox="0 0 24 24">
+                        <path d="M11 3a8 8 0 016 13M21 21l-4-4" />
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+
+                {/* Suggestions Dropdown */}
+                {showSuggestions && (
+                  <div className="ae-search-suggestions">
+                    {suggestions.map(p => (
+                      <Link
+                        key={p.productoId}
+                        to={`/producto/${p.productoId}`}
+                        className="ae-suggestion-item"
+                        onClick={() => setShowSuggestions(false)}
+                      >
+                        <div className="ae-suggest-img-box">
+                          <img src={p.imagenUrl || 'https://via.placeholder.com/60'} alt={p.nombre} />
+                        </div>
+                        <div className="ae-suggest-info">
+                          <span className="ae-suggest-name">{p.nombre}</span>
+                          {p.reviews > 0 && (
+                            <div className="ae-suggest-meta">
+                              <div className="ae-suggest-stars">
+                                {renderStars(p.rating)}
+                              </div>
+                              <span className="ae-suggest-reviews">({p.reviews})</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="ae-suggest-price">
+                          S/ {p.precio.toFixed(2)}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Right side: auth + cart */}
-              <div className={`ae-user-menu ${mobileSearchOpen ? 'ae-logo-hidden' : ''}`}>
+              <div className="ae-user-menu">
+                {/* Botón de búsqueda solo móvil */}
+                <button
+                  className="ae-mobile-search-toggle"
+                  onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+                  aria-label="Abrir buscador"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+
                 {user ? (
                   <div className={`ae-user-profile ${showDropdown ? 'open' : ''}`} ref={profileRef}>
                     <div
