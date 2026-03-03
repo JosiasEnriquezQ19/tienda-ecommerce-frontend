@@ -1,602 +1,506 @@
-/* Improved Login and Registration CSS */
+/* ===== MiTienda+ Auth Pages — Split Layout ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-  --ae-primary: #ff4f4f;
-  --ae-primary-dark: #e04545;
-  --ae-accent: #1e40af;
-  --ae-text: #1f2937;
-  --ae-text-light: #6b7280;
-  --ae-border: #e2e8f0;
-  --ae-bg-light: #f8fafc;
-  --ae-white: #ffffff;
-  --ae-error: #ef4444;
-  --ae-success: #10b981;
-  --ae-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --mt-primary: #4f46e5;
+  --mt-primary-hover: #4338ca;
+  --mt-primary-light: rgba(79, 70, 229, .08);
+  --mt-accent: #06b6d4;
+  --mt-text: #1e1b4b;
+  --mt-text-light: #6b7280;
+  --mt-border: #e5e7eb;
+  --mt-bg: #f0f0f5;
+  --mt-white: #ffffff;
+  --mt-error: #ef4444;
+  --mt-radius: 14px;
 }
 
-/* ====== ELIMINACIÓN COMPLETA DEL ESPACIO BLANCO ====== */
-/* Reset total para auth pages */
-html, body {
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 100% !important;
-  overflow-x: hidden;
-}
-
-/* Eliminar espacios del contenedor raíz */
-#root {
-  margin: 0 !important;
-  padding: 0 !important;
-  min-height: 100vh !important;
-}
-
-/* Eliminar espacios del app */
-.app {
-  margin: 0 !important;
-  padding: 0 !important;
-  min-height: 100vh !important;
-}
-
-/* Layout - Contenedor que toma toda la pantalla */
-.ae-login-container {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  margin: 0 !important;
+/* ── Reset for Auth Pages ── */
+.mt-auth-wrapper,
+.mt-auth-wrapper * {
   box-sizing: border-box;
-  /* Asegurarnos que ocupa al menos toda la altura de la ventana */
-  
-  /* 🎨 OPCIONES DE FONDO - Descomenta la que prefieras */
-  
-  /* Opción 1: Tecnología moderna (ACTIVA) */
-  background: 
-    linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%),
-    url('https://i0.wp.com/intercompras.com/blog/wp-content/uploads/2023/10/null-35.jpeg?fit=2048%2C1365&ssl=1') center/cover;
-  
-  /* Opción 2: E-commerce/Shopping */
-  /* background: 
-    linear-gradient(135deg, rgba(255, 79, 79, 0.85) 0%, rgba(224, 69, 69, 0.85) 100%),
-    url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover; */
-  
-  /* Opción 3: Oficina moderna */
-  /* background: 
-    linear-gradient(135deg, rgba(67, 56, 202, 0.8) 0%, rgba(139, 69, 19, 0.8) 100%),
-    url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80') center/cover; */
-  
-  /* Opción 4: Abstracto colorido */
-  /* background: 
-    linear-gradient(135deg, rgba(236, 72, 153, 0.8) 0%, rgba(239, 68, 68, 0.8) 100%),
-    url('https://images.unsplash.com/photo-1557683316-973673baf926?ixlib=rb-4.0.3&auto=format&fit=crop&w=1915&q=80') center/cover; */
-  
-  /* Opción 5: Solo degradado (sin imagen) */
-  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-  
-  /* Opción 6: Imagen local (coloca tu imagen en /public/images/) */
-  /* background: 
-    linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%),
-    url('/images/tu-imagen.jpg') center/cover; */
-  
-  background-attachment: fixed;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-.ae-login-card {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow: 
-    var(--ae-shadow),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  padding: 48px 40px;
+/* ── Wrapper ── */
+.mt-auth-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--mt-bg);
+}
+
+/* ── Left Panel (Form) ── */
+.mt-auth-left {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 40px;
+  background: var(--mt-white);
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.mt-auth-form-box {
   width: 100%;
   max-width: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: slideUp 0.6s ease-out;
+  animation: mtFadeUp .5s ease-out both;
 }
 
-@keyframes slideUp {
+@keyframes mtFadeUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(18px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Logo - Better positioning */
-.ae-login-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
+/* Logo — clickable link */
+.mt-auth-logo {
+  display: inline-block;
   margin-bottom: 24px;
+  text-decoration: none;
+  transition: transform .2s, opacity .2s;
 }
 
-.ae-logo-main {
-  font-size: 32px;
-  font-weight: 900;
-  color: var(--ae-accent);
-  letter-spacing: -1px;
+.mt-auth-logo:hover {
+  transform: scale(1.04);
+  opacity: .85;
 }
 
-.ae-logo-plus {
-  font-size: 32px;
-  font-weight: 900;
-  color: var(--ae-primary);
-  margin-left: 2px;
+.mt-auth-logo img {
+  height: 40px;
+  width: auto;
 }
 
-/* Titles - Better spacing */
-.ae-login-title {
-  font-size: 28px;
-  font-weight: 700;
-  text-align: center;
-  margin: 0 0 8px 0;
-  color: var(--ae-text);
-  letter-spacing: -0.5px;
+/* Titles */
+.mt-auth-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--mt-text);
+  margin-bottom: 8px;
+  letter-spacing: -.4px;
 }
 
-.ae-login-subtitle {
-  font-size: 16px;
-  color: var(--ae-text-light);
-  text-align: center;
-  margin: 0 0 32px 0;
+.mt-auth-subtitle {
+  font-size: 15px;
+  color: var(--mt-text-light);
+  margin-bottom: 32px;
   line-height: 1.5;
 }
 
-/* Error and Success messages */
-.ae-login-error, .ae-login-success {
+/* Error */
+.mt-auth-error {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 24px;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
   font-size: 14px;
   font-weight: 500;
+  background: rgba(239, 68, 68, .08);
+  color: var(--mt-error);
+  border: 1px solid rgba(239, 68, 68, .18);
 }
 
-.ae-login-error {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-  color: var(--ae-error);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.ae-login-success {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-  color: var(--ae-success);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.ae-login-error svg, .ae-login-success svg {
-  width: 20px;
-  height: 20px;
+.mt-auth-error svg {
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
+  fill: var(--mt-error);
 }
 
-/* Form - Better spacing and alignment */
-.ae-login-form {
-  margin-bottom: 32px;
+/* Form */
+.mt-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Compact registration form */
-@media (max-width: 480px) {
-  .ae-login-form {
-    margin-bottom: 20px;
-  }
+.mt-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.ae-form-group {
-  margin-bottom: 20px;
+.mt-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
-.ae-form-label {
-  display: block;
+.mt-field-label {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--ae-text);
-  letter-spacing: 0.02em;
+  color: var(--mt-text);
 }
 
-.ae-form-input {
+.mt-field-label .mt-required {
+  color: var(--mt-error);
+  margin-left: 2px;
+}
+
+.mt-field-input {
   width: 100%;
-  padding: 16px 20px;
-  border: 2px solid var(--ae-border);
-  border-radius: 12px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
-  box-sizing: border-box;
+  padding: 13px 16px;
+  border: 1.5px solid var(--mt-border);
+  border-radius: var(--mt-radius);
+  font-size: 15px;
+  font-family: inherit;
+  background: var(--mt-white);
+  transition: border-color .25s, box-shadow .25s;
+  color: var(--mt-text);
 }
 
-.ae-form-input:focus {
+.mt-field-input:focus {
   outline: none;
-  border-color: var(--ae-primary);
-  box-shadow: 0 0 0 3px rgba(255, 79, 79, 0.1);
-  background: var(--ae-white);
+  border-color: var(--mt-primary);
+  box-shadow: 0 0 0 3px var(--mt-primary-light);
 }
 
-.ae-form-input::placeholder {
-  color: var(--ae-text-light);
-  opacity: 0.7;
+.mt-field-input::placeholder {
+  color: #b0b0c0;
 }
 
-/* Form options - Better layout */
-.ae-form-options {
+/* Password wrapper */
+.mt-password-wrap {
+  position: relative;
+}
+
+.mt-password-wrap .mt-field-input {
+  padding-right: 44px;
+}
+
+.mt-toggle-pw {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mt-text-light);
+  display: flex;
+  align-items: center;
+}
+
+.mt-toggle-pw svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Options row */
+.mt-auth-options {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 24px 0;
   font-size: 14px;
 }
 
-.ae-remember-me {
+.mt-remember {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--ae-text-light);
+  color: var(--mt-text-light);
   cursor: pointer;
   user-select: none;
 }
 
-.ae-remember-me input {
+.mt-remember input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--ae-primary);
+  accent-color: var(--mt-primary);
   cursor: pointer;
+  border-radius: 4px;
 }
 
-.ae-forgot-password {
-  color: var(--ae-primary);
+.mt-forgot-link {
+  color: var(--mt-primary);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease;
+  transition: color .2s;
 }
 
-.ae-forgot-password:hover {
-  color: var(--ae-primary-dark);
+.mt-forgot-link:hover {
+  color: var(--mt-primary-hover);
   text-decoration: underline;
 }
 
-/* Button - Much better design */
-.ae-login-button {
+/* Submit button */
+.mt-auth-btn {
   width: 100%;
-  padding: 16px 24px;
-  background: linear-gradient(135deg, var(--ae-primary), var(--ae-primary-dark));
-  color: var(--ae-white);
+  padding: 14px 24px;
+  background: var(--mt-primary);
+  color: var(--mt-white);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--mt-radius);
   font-size: 16px;
   font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(255, 79, 79, 0.3);
+  transition: background .25s, transform .15s, box-shadow .25s;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, .25);
+  margin-top: 4px;
 }
 
-.ae-login-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 79, 79, 0.4);
+.mt-auth-btn:hover:not(:disabled) {
+  background: var(--mt-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, .35);
 }
 
-.ae-login-button:active:not(:disabled) {
+.mt-auth-btn:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.ae-login-button:disabled {
-  opacity: 0.7;
+.mt-auth-btn:disabled {
+  opacity: .65;
   cursor: not-allowed;
-  transform: none;
 }
 
-.ae-spinner {
+/* Spinner */
+.mt-spinner {
   width: 20px;
   height: 20px;
-  animation: spin 1s linear infinite;
+  animation: mtSpin .8s linear infinite;
 }
 
-.ae-spinner circle {
+.mt-spinner circle {
   stroke: currentColor;
   stroke-width: 4;
   stroke-linecap: round;
   stroke-dasharray: 80;
   stroke-dashoffset: 60;
+  fill: none;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes mtSpin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Social login - Better divider */
-.ae-social-login {
-  margin: 32px 0;
-}
-
-.ae-divider {
+/* Divider */
+.mt-auth-divider {
   display: flex;
   align-items: center;
-  color: var(--ae-text-light);
-  font-size: 14px;
+  color: var(--mt-text-light);
+  font-size: 13px;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin: 4px 0;
 }
 
-.ae-divider::before,
-.ae-divider::after {
+.mt-auth-divider::before,
+.mt-auth-divider::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ae-border), transparent);
+  background: var(--mt-border);
 }
 
-.ae-divider::before {
-  margin-right: 16px;
+.mt-auth-divider::before {
+  margin-right: 14px;
 }
 
-.ae-divider::after {
-  margin-left: 16px;
+.mt-auth-divider::after {
+  margin-left: 14px;
 }
 
-.ae-social-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.ae-social-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border: 2px solid var(--ae-border);
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: var(--ae-white);
-  transition: all 0.3s ease;
-}
-
-.ae-social-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.ae-google {
-  color: #4285f4;
-  border-color: #4285f4;
-}
-
-.ae-facebook {
-  color: #3b5998;
-  border-color: #3b5998;
-}
-
-/* Google OAuth button wrapper */
-.ae-google-btn-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Custom Google button — matches primary btn style */
+.mt-google-btn {
   width: 100%;
-}
-
-.ae-google-btn-wrapper > div {
-  width: 100% !important;
-  display: flex;
-  justify-content: center;
-}
-
-.ae-google-btn-wrapper iframe {
-  margin: 0 auto;
-}
-
-/* Signup link - Better styling */
-.ae-signup-link {
-  text-align: center;
-  font-size: 16px;
-  color: var(--ae-text-light);
-  line-height: 1.6;
-}
-
-.ae-signup-link a {
-  color: var(--ae-primary);
-  text-decoration: none;
+  padding: 13px 24px;
+  background: var(--mt-white);
+  color: var(--mt-text);
+  border: 1.5px solid var(--mt-border);
+  border-radius: var(--mt-radius);
+  font-size: 15px;
   font-weight: 600;
-  transition: color 0.2s ease;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background .2s, border-color .2s, transform .15s, box-shadow .2s;
 }
 
-.ae-signup-link a:hover {
-  color: var(--ae-primary-dark);
-  text-decoration: underline;
+.mt-google-btn:hover:not(:disabled) {
+  background: #f8f8ff;
+  border-color: #c4c4d4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
 
-/* Form row for side-by-side inputs */
-.ae-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
+.mt-google-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-/* Terms checkbox styling */
-.ae-terms-checkbox {
-  margin: 24px 0;
+.mt-google-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
 }
 
-.ae-terms-checkbox .ae-remember-me {
+.mt-google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Terms */
+.mt-terms {
+  display: flex;
   align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--mt-text-light);
   line-height: 1.5;
+  cursor: pointer;
+  user-select: none;
 }
 
-.ae-terms-checkbox .ae-remember-me span {
-  font-size: 14px;
+.mt-terms input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--mt-primary);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
-.ae-terms-checkbox a {
-  color: var(--ae-primary);
+.mt-terms a {
+  color: var(--mt-primary);
   text-decoration: none;
   font-weight: 500;
 }
 
-.ae-terms-checkbox a:hover {
+.mt-terms a:hover {
   text-decoration: underline;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .ae-login-container {
-    padding: 16px;
-    /* Asegurar que el contenedor ocupa todo el espacio disponible */
-    width: 100%;
-    height: 100%;
-    /* Centrar el formulario vertical y horizontalmente */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Switch link */
+.mt-auth-switch {
+  text-align: center;
+  font-size: 14px;
+  color: var(--mt-text-light);
+  margin-top: 24px;
+}
+
+.mt-auth-switch a {
+  color: var(--mt-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.mt-auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* ── Right Panel (Art) ── */
+.mt-auth-right {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #312e81 0%, #4338ca 40%, #6366f1 100%);
+  height: 100vh;
+}
+
+.mt-auth-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: .92;
+  animation: mtZoomIn 1.2s ease-out both;
+}
+
+@keyframes mtZoomIn {
+  from {
+    transform: scale(1.08);
+    opacity: 0;
   }
-  
-  .ae-login-card {
-    padding: 30px 20px;
-    border-radius: 16px;
-    /* Centrar el contenido del card */
-    margin: 0 auto;
-    max-width: 85%;
+
+  to {
+    transform: scale(1);
+    opacity: .92;
   }
-  
-  .ae-login-title {
-    font-size: 24px;
-  }
-  
-  .ae-login-subtitle {
-    font-size: 14px;
-  }
-  
-  .ae-form-options {
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .mt-auth-wrapper {
     flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
+    height: 100vh;
+    overflow-y: auto;
   }
-  
-  .ae-social-buttons {
-    grid-template-columns: 1fr;
+
+  .mt-auth-right {
+    display: none;
   }
-  
-  /* Form row responsive */
-  .ae-form-row {
-    grid-template-columns: 1fr;
-    gap: 20px;
+
+  .mt-auth-left {
+    flex: 1;
+    height: auto;
+    min-height: 100vh;
+    padding: 32px 20px;
+    background: linear-gradient(160deg, #f0f0f5 0%, #e8e6f0 100%);
   }
 }
 
 @media (max-width: 480px) {
-  .ae-login-card {
-    padding: 24px 20px;
-    /* Ajustar el tamaño del formulario */
-    width: 90%;
-    max-width: 340px;
-    margin: 0 auto; /* Centrar el formulario */
+  .mt-auth-title {
+    font-size: 24px;
   }
-  
-  .ae-form-input {
-    padding: 10px 12px;
-    font-size: 15px; /* Prevents zoom on iOS */
-  }
-  
-  /* Optimización para formulario de registro en móvil */
-  .ae-login-title {
-    font-size: 22px;
-    margin-bottom: 5px;
-  }
-  
-  .ae-login-subtitle {
+
+  .mt-auth-subtitle {
     font-size: 13px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
-  
-  .ae-form-group {
-    margin-bottom: 14px;
+
+  .mt-field-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-  
-  .ae-form-label {
-    margin-bottom: 4px;
-    font-size: 13px;
+
+  .mt-field-input {
+    padding: 11px 14px;
+    font-size: 15px;
   }
-  
-  /* Hacer el formulario más compacto en registro */
-  .ae-terms-checkbox {
-    margin: 14px 0;
-  }
-  
-  .ae-terms-checkbox .ae-remember-me {
-    font-size: 12px;
-  }
-  
-  .ae-terms-checkbox .ae-remember-me input {
-    width: 16px;
-    height: 16px;
-  }
-  
-  /* Botón más pequeño en móvil */
-  .ae-login-button {
+
+  .mt-auth-btn {
     padding: 12px 20px;
     font-size: 15px;
   }
-  
-  /* Ajustes para el signup link */
-  .ae-signup-link {
-    font-size: 14px;
-    margin-top: 15px;
-  }
-}
-.ae-signup-link a{ color:var(--ae-primary); text-decoration:none; font-weight:600 }
-.ae-signup-link a:hover{ text-decoration:underline }
 
-/* Responsive */
-@media (max-width:480px){ 
-  .ae-social-buttons{ 
-    grid-template-columns:1fr 
+  .mt-auth-options {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
   }
-  
-  /* Centrar el formulario vertical y horizontalmente */
-  .ae-login-container {
-    align-items: center; /* Centrar verticalmente */
-    justify-content: center; /* Centrar horizontalmente */
-    padding-top: 0;
-    overflow-y: auto; /* Permitir scroll si el contenido es muy alto */
-    min-height: calc(100vh - 60px); /* Restar la altura del header */
-    margin-top: 60px; /* Añadir margen superior para el header */
+
+  .mt-auth-form-box {
+    max-width: 100%;
   }
-}
-
-/* ====== SOLO ELIMINAR EL ESPACIO BLANCO DEL HEADER ====== */
-/* Hacer que el header no tenga espacio arriba */
-.app header {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(15px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1) !important;
-  margin-top: 0 !important;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-/* Mejorar legibilidad del texto del header */
-.app header h1,
-.app header nav a {
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8) !important;
 }

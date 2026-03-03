@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logoImg from '../assets/logo-ecommerce.png';
 import './CompPiePagina.css';
 
 export default function CompPiePagina() {
@@ -29,7 +30,7 @@ export default function CompPiePagina() {
           <div className="ae-footer-section">
             <h4 className="ae-footer-title">Sobre nosotros</h4>
             <ul className="ae-footer-links">
-              <li><Link to="/sobre-nosotros">Sobre Tienda+</Link></li>
+              <li><Link to="/sobre-nosotros">Sobre nosotros</Link></li>
               <li><Link to="/blog">Blog</Link></li>
               <li><Link to="/trabaja-con-nosotros">Trabaja con nosotros</Link></li>
             </ul>
@@ -56,7 +57,7 @@ export default function CompPiePagina() {
         {/* Sección inferior del footer */}
         <div className="ae-footer-bottom">
           <div className="ae-copyright">
-            © {new Date().getFullYear()} Tienda+. Todos los derechos reservados.
+            © {new Date().getFullYear()} <img src={logoImg} alt="MiTienda+" style={{ height: '20px', verticalAlign: 'middle' }} />. Todos los derechos reservados.
           </div>
           <div className="ae-legal-links">
             <Link to="/terminos">Términos y condiciones</Link>

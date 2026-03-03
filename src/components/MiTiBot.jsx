@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API } from '../api';
+import logoImg from '../assets/logo-ecommerce.png';
 import './MiTiBot.css';
 
 const ROBOT_IMG = 'https://i.pinimg.com/474x/fc/8d/8d/fc8d8d43a5f624568b77baf34e61bcc6.jpg';
 
-export default function MiTiBot({ open = false, incoming = '', onClose = () => {} }){
+export default function MiTiBot({ open = false, incoming = '', onClose = () => { } }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const navigate = useNavigate();
@@ -27,52 +28,52 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
     { patterns: [/contacto/i, /soporte/i, /ayuda/i], answer: 'Puedes contactar al soporte desde la página de Contacto o usando el chat si está habilitado; también revisa la sección Ayuda en el pie de página.' }
   ];
 
-  function localSystemAnswer(q){
-    if(!q) return null;
+  function localSystemAnswer(q) {
+    if (!q) return null;
     const text = String(q).toLowerCase();
-    for(const item of SYSTEM_FAQ){
-      for(const p of item.patterns){
-        if(p.test(text)) return item.answer;
+    for (const item of SYSTEM_FAQ) {
+      for (const p of item.patterns) {
+        if (p.test(text)) return item.answer;
       }
     }
     return null;
   }
 
-  useEffect(()=>{
-    if(open){
-      if(!shownIntro){
+  useEffect(() => {
+    if (open) {
+      if (!shownIntro) {
         setMessages([
           { from: 'bot', text: 'Hola — soy miTiBOT. Puedo ayudarte a buscar productos, recomendar ofertas y responder preguntas sobre la tienda.' },
           { from: 'bot', text: 'Puedes pedirme que busque un producto, mostrar ofertas, o preguntarme sobre políticas y métodos de pago. También puedo intentar usar un servicio AI si está configurado.' },
-          { from: 'bot', text: 'Prueba escribiendo: "zapatos deportivos talla 42" o pulsa "Buscar ofertas".' , action: 'none' }
+          { from: 'bot', text: 'Prueba escribiendo: "zapatos deportivos talla 42" o pulsa "Buscar ofertas".', action: 'none' }
         ]);
         setShownIntro(true);
       }
     }
-  },[open]);
+  }, [open]);
 
-  useEffect(()=>{ endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   // when incoming prop changes, push it into messages
-  useEffect(()=>{
-    if(incoming && incoming.trim()){
+  useEffect(() => {
+    if (incoming && incoming.trim()) {
       setMessages(m => [...m, { from: 'bot', text: incoming }]);
     }
   }, [incoming]);
 
   // Función simplificada que solo usa respuestas locales
-  async function askAI(question){
+  async function askAI(question) {
     const q = (question || '').trim();
-    if(!q) return;
+    if (!q) return;
     setAiLoading(true);
     // Insert a temporary typing indicator message and remember its id so we can replace it
     const tempId = `t-${Date.now()}`;
     setMessages(m => [...m, { id: tempId, from: 'bot', text: '...', temp: true }]);
-    
+
     try {
       // First, check local system FAQ/responder
       const sys = localSystemAnswer(q);
-      if(sys){
+      if (sys) {
         // insert the answer immediately replacing the temp id
         setMessages(prev => prev.map(msg => msg.id === tempId ? ({ ...msg, text: sys, temp: false }) : msg));
         return;
@@ -81,10 +82,10 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
       // Si no hay respuesta en el sistema local, usar el fallback
       const fallbackText = localFallbackAnswer(q);
       const suggested = tryExtractQuery(fallbackText) || tryExtractQuery(q);
-      setMessages(prev => prev.map(msg => msg.id === tempId ? ({ 
-        ...msg, 
-        text: fallbackText, 
-        temp: false, 
+      setMessages(prev => prev.map(msg => msg.id === tempId ? ({
+        ...msg,
+        text: fallbackText,
+        temp: false,
         suggestedQuery: suggested || q // Si no hay query sugerida, usar la pregunta como query
       }) : msg));
     } finally {
@@ -92,15 +93,15 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
     }
   }
 
-  function localFallbackAnswer(q){
+  function localFallbackAnswer(q) {
     const s = q.toLowerCase();
-    if(s.includes('precio') || s.includes('cost') || s.includes('cuesta')){
+    if (s.includes('precio') || s.includes('cost') || s.includes('cuesta')) {
       return 'Puedo ayudarte con precios — intenta abrir la página del producto o dime cuál producto te interesa para mostrar opciones.';
     }
-    if(s.includes('oferta') || s.includes('descuento') || s.includes('promoc')){
+    if (s.includes('oferta') || s.includes('descuento') || s.includes('promoc')) {
       return 'Actualmente tenemos promociones destacadas en la sección Promociones; dime qué categoría o producto te interesa y buscaré ofertas.';
     }
-    if(s.includes('envío') || s.includes('envio')){
+    if (s.includes('envío') || s.includes('envio')) {
       return 'El envío puede ser gratis para compras superiores a ciertos montos. Dime los productos que quieres y calculo el envío estimado.';
     }
     // generic fallback
@@ -108,61 +109,61 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
   }
 
   // Try to extract a concise search query from AI text
-  function tryExtractQuery(text){
-    if(!text) return null;
+  function tryExtractQuery(text) {
+    if (!text) return null;
     const t = String(text);
-  // 1) look for any quoted substring (double or single quotes)
-  const generalQuote = t.match(/"([^"']{2,}?)"/) || t.match(/'([^"']{2,}?)'/);
-  if (generalQuote) return generalQuote[1].trim();
+    // 1) look for any quoted substring (double or single quotes)
+    const generalQuote = t.match(/"([^"']{2,}?)"/) || t.match(/'([^"']{2,}?)'/);
+    if (generalQuote) return generalQuote[1].trim();
 
-  // 2) common Spanish phrasing: 'relacionados con "..."' or 'productos relacionados con ...'
-  const relMatch = t.match(/relacionad[oa]s? con[:]?\s*"?([\w\s\-]{2,80})"?/i);
-  if (relMatch) return relMatch[1].trim();
+    // 2) common Spanish phrasing: 'relacionados con "..."' or 'productos relacionados con ...'
+    const relMatch = t.match(/relacionad[oa]s? con[:]?\s*"?([\w\s\-]{2,80})"?/i);
+    if (relMatch) return relMatch[1].trim();
 
-  // 3) explicit buscar patterns: Buscar: "..." or Buscar ...
-  const quoteMatch = t.match(/[Bb]uscar[:]?\s*"([^"]{2,80})"/i) || t.match(/[Bb]uscar[:]?\s*'([^']{2,80})'/i);
-  if(quoteMatch) return quoteMatch[1].trim();
+    // 3) explicit buscar patterns: Buscar: "..." or Buscar ...
+    const quoteMatch = t.match(/[Bb]uscar[:]?\s*"([^"]{2,80})"/i) || t.match(/[Bb]uscar[:]?\s*'([^']{2,80})'/i);
+    if (quoteMatch) return quoteMatch[1].trim();
 
-  const buscarMatch = t.match(/[Bb]uscar[:]?\s*([\w\s\-]{2,50})/i);
-  if(buscarMatch) return buscarMatch[1].trim();
+    const buscarMatch = t.match(/[Bb]uscar[:]?\s*([\w\s\-]{2,50})/i);
+    if (buscarMatch) return buscarMatch[1].trim();
 
-  const searchFor = t.match(/search for[:]?\s*([\w\s\-]{2,50})/i);
-  if(searchFor) return searchFor[1].trim();
+    const searchFor = t.match(/search for[:]?\s*([\w\s\-]{2,50})/i);
+    if (searchFor) return searchFor[1].trim();
     // fallback: if the reply repeats the user's query or mentions product types, return short snippet
     // take first sentence (up to 8 words) as a safe query
     const firstSentence = t.split(/[\.\n\!\?]/)[0] || '';
     const words = firstSentence.split(/\s+/).filter(Boolean);
-    if(words.length >= 2){
-      return words.slice(0,8).join(' ');
+    if (words.length >= 2) {
+      return words.slice(0, 8).join(' ');
     }
     return null;
   }
 
-  function close(){ onClose && onClose(); }
+  function close() { onClose && onClose(); }
 
-  function send(){
+  function send() {
     const q = (input || '').trim();
-    if(!q) return;
+    if (!q) return;
     setMessages(m => [...m, { from: 'user', text: q }]);
     setInput('');
     // prefer AI answer if available; otherwise fall back to search
-    setTimeout(()=>{
+    setTimeout(() => {
       // try AI first
       askAI(q);
     }, 300);
   }
 
-  if(!open) return null;
+  if (!open) return null;
 
   return (
     <div className="mitibot-overlay" role="dialog" aria-label="miTiBOT chat">
       <div className="mitibot-panel">
         <div className="mitibot-header">
-          <strong>miTiBOT</strong>
+          <img src={logoImg} alt="MiTienda+" style={{ height: '24px', width: 'auto' }} />
           <button className="mitibot-close" onClick={close} aria-label="Cerrar">✕</button>
         </div>
         <div className="mitibot-body">
-          {messages.map((m,i) => (
+          {messages.map((m, i) => (
             m.from === 'bot' ? (
               <div key={i} className={`mitibot-message bot`}>
                 <div className={`mitibot-bubble bot`}>
@@ -170,7 +171,7 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
                   {m.suggestedQuery ? (
                     <div className="mitibot-suggested">
                       <small>¿Quieres buscar esto en la tienda?</small>
-                      <button className="mitibot-suggested-btn" onClick={()=>{ navigate(`/buscar?search=${encodeURIComponent(m.suggestedQuery)}`); close(); }}>
+                      <button className="mitibot-suggested-btn" onClick={() => { navigate(`/buscar?search=${encodeURIComponent(m.suggestedQuery)}`); close(); }}>
                         Buscar: {m.suggestedQuery}
                       </button>
                     </div>
@@ -188,8 +189,8 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
           ))}
           <div ref={endRef} />
         </div>
-        <form className="mitibot-compose" onSubmit={(e)=>{ e.preventDefault(); send(); }}>
-          <input placeholder="Escribe aquí lo que buscas..." value={input} onChange={e=>setInput(e.target.value)} />
+        <form className="mitibot-compose" onSubmit={(e) => { e.preventDefault(); send(); }}>
+          <input placeholder="Escribe aquí lo que buscas..." value={input} onChange={e => setInput(e.target.value)} />
           <button type="submit" className="mitibot-send">Buscar</button>
         </form>
       </div>

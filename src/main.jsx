@@ -14,6 +14,7 @@ import Factura from './pages/Factura'
 import PefilUsuario from './pages/PefilUsuario'
 import MisPedidos from './pages/MisPedidos'
 import DetallePedido from './pages/DetallePedido'
+import MasVendidos from './pages/MasVendidos'
 import { AuthProvider } from './auth/AuthContext'
 import { GOOGLE_CLIENT_ID } from './auth/AuthContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -66,6 +67,7 @@ try {
                 <Route path="pedidos/:id" element={<DetallePedido />} />
                 <Route path="factura" element={<Factura />} />
                 <Route path="factura/:id" element={<Factura />} />
+                <Route path="mas-vendidos" element={<MasVendidos />} />
               </Route>
             </Routes>
           </BrowserRouter>

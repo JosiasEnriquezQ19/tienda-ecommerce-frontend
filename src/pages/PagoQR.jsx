@@ -2,7 +2,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './PagoQR.css'
 
-export default function PagoQR(){
+export default function PagoQR() {
   const { state } = useLocation()
   const navigate = useNavigate()
   const pedidoId = state?.pedidoId || null
@@ -20,8 +20,8 @@ export default function PagoQR(){
         <div className="ae-pagoqr-total">Total a pagar: <strong>S/ {Number(total).toFixed(2)}</strong></div>
 
         <div className="ae-pagoqr-logos">
-          <img src="https://logosenvector.com/logo/img/yape-37283.png" alt="Yape"/>
-          <img src="https://images.seeklogo.com/logo-png/38/1/plin-logo-png_seeklogo-386806.png" alt="Plin"/>
+          <img src="https://logosenvector.com/logo/img/yape-37283.png" alt="Yape" />
+          <img src="https://images.seeklogo.com/logo-png/38/1/plin-logo-png_seeklogo-386806.png" alt="Plin" />
         </div>
 
         <div className="ae-pagoqr-qr">
@@ -32,8 +32,8 @@ export default function PagoQR(){
           )}
         </div>
 
-        <p className="ae-pagoqr-instr">Después de pagar, envía la captura del pago a <strong>mitiendaplus@gmail.com</strong> o por WhatsApp al <strong>987654321</strong>. Se confirmará el pago y cambiará el estado del pedido a "procesando".</p>
-        
+        <p className="ae-pagoqr-instr">Después de pagar, envía la captura del pago a <strong>soporte@mitiendaplus.com</strong> o por WhatsApp al <strong>987654321</strong>. Se confirmará el pago y cambiará el estado del pedido a "procesando".</p>
+
         <p className="ae-pagoqr-thanks"><strong>GRACIAS POR SU CONFIANZA</strong></p>
         <p className="ae-pagoqr-confirm">Se le enviará un mensaje de la confirmación del pago y más detalles del envío.</p>
 

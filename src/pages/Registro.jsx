@@ -1,83 +1,45 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import './Login.css'
-import './register-mobile.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../auth/AuthContext'
-import { GoogleLogin } from '@react-oauth/google'
+import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
 import { API } from '../api'
+import logoImg from '../assets/logo-ecommerce.png'
+import loginArt from '../assets/login-art.png'
 
 export default function Registro() {
   const { register, googleLogin } = useContext(AuthContext)
   const [form, setForm] = useState({ email: '', password: '', nombre: '', apellido: '', telefono: '' })
+  const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 480)
   const navigate = useNavigate()
-
-  // Detector de tamaño de pantalla para aplicar clase compact-form
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 480)
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
   async function validateEmail(email) {
     try {
-      console.log('Intentando validar email en:', `${API}/Usuarios/verificar-email?email=${encodeURIComponent(email)}`);
       const response = await axios.get(`${API}/Usuarios/verificar-email?email=${encodeURIComponent(email)}`)
-      // Si la API devuelve datos, interpretamos correctamente la respuesta
-      if (response.status === 200) {
-        return response.data === false; // Si data es false, email no existe (por lo que es válido)
-      }
-      return true; // Por defecto, asumimos que es válido
+      if (response.status === 200) return response.data === false
+      return true
     } catch (error) {
-      console.log('Error validando email:', error.message);
-
-      // Si el endpoint no existe o hay otro error, asumimos que el email es válido
-      if (error.response && error.response.status === 404) {
-        // El endpoint existe pero el email no está registrado
-        return true;
-      }
-
-      // Intentamos otra ruta alternativa solo si el primer intento falló con 404 o 400
+      if (error.response && error.response.status === 404) return true
       if (error.response && (error.response.status === 404 || error.response.status === 400)) {
         try {
-          console.log('Intentando ruta alternativa para validar email');
-          const response = await axios.get(`${API}/Auth/verificar-email?email=${encodeURIComponent(email)}`);
-          if (response.status === 200) {
-            return response.data === false;
-          }
-        } catch (err) {
-          console.log('Error en ruta alternativa para validar email:', err.message);
-        }
+          const response = await axios.get(`${API}/Auth/verificar-email?email=${encodeURIComponent(email)}`)
+          if (response.status === 200) return response.data === false
+        } catch (err) { /* ignore */ }
       }
-
-      // Si no podemos verificar, simplemente continuamos con el registro
-      console.log('No se pudo validar el email, asumiendo que es válido');
-      return true;
+      return true
     }
   }
 
   async function validateTelefono(telefono) {
-    if (!telefono) return true; // Si no hay teléfono, es válido
-
+    if (!telefono) return true
     try {
-      console.log('Intentando validar teléfono en:', `${API}/Usuarios/verificar-telefono?telefono=${encodeURIComponent(telefono)}`);
-      const response = await axios.get(`${API}/Usuarios/verificar-telefono?telefono=${encodeURIComponent(telefono)}`);
-      // Interpretamos la respuesta correctamente
-      if (response.status === 200) {
-        return response.data === false; // Si data es false, teléfono no existe (por lo que es válido)
-      }
-      return true;
-    } catch (error) {
-      console.log('Error validando teléfono:', error.message);
-      // Si el endpoint no existe o hay otro error, asumimos que el teléfono es válido
-      return true;
-    }
+      const response = await axios.get(`${API}/Usuarios/verificar-telefono?telefono=${encodeURIComponent(telefono)}`)
+      if (response.status === 200) return response.data === false
+      return true
+    } catch (error) { return true }
   }
 
   async function submit(e) {
@@ -86,230 +48,181 @@ export default function Registro() {
     setError(null)
 
     try {
-      console.log('Iniciando proceso de registro para:', form.email);
+      if (!form.email || !form.email.includes('@')) { setError("Por favor ingresa un correo electrónico válido"); return }
+      if (!form.password || form.password.length < 6) { setError("La contraseña debe tener al menos 6 caracteres"); return }
+      if (!form.nombre || !form.apellido) { setError("Nombre y apellido son obligatorios"); return }
+      if (!form.telefono) { setError("El teléfono es obligatorio"); setIsLoading(false); return }
 
-      // Validación de formato básico
-      if (!form.email || !form.email.includes('@')) {
-        setError("Por favor ingresa un correo electrónico válido");
-        return;
-      }
+      const onlyDigits = String(form.telefono).replace(/\D/g, '')
+      if (onlyDigits.length !== 9 || onlyDigits[0] !== '9') { setError('Número de teléfono no válido o debe contener 9 dígitos'); setIsLoading(false); return }
 
-      if (!form.password || form.password.length < 6) {
-        setError("La contraseña debe tener al menos 6 caracteres");
-        return;
-      }
-
-      if (!form.nombre || !form.apellido) {
-        setError("Nombre y apellido son obligatorios");
-        return;
-      }
-
-      // Nuevo: telefono obligatorio
-      if (!form.telefono) {
-        setError("El teléfono es obligatorio");
-        setIsLoading(false);
-        return;
-      }
-
-      // Validación: debe tener exactamente 9 dígitos y empezar con '9'
-      const onlyDigits = String(form.telefono).replace(/\D/g, '');
-      if (onlyDigits.length !== 9 || onlyDigits[0] !== '9') {
-        setError('Número de teléfono no válido o debe contener 9 dígitos');
-        setIsLoading(false);
-        return;
-      }
-
-      // Intentamos hacer validaciones simples, pero si fallan, continuamos con el registro
       try {
-        // Validar email
-        const emailValido = await validateEmail(form.email);
-        if (!emailValido) {
-          setError("Este correo electrónico ya está registrado");
-          setIsLoading(false);
-          return;
-        }
-
-        // Validar teléfono solo si se proporcionó
+        const emailValido = await validateEmail(form.email)
+        if (!emailValido) { setError("Este correo electrónico ya está registrado"); setIsLoading(false); return }
         if (form.telefono) {
-          const telefonoValido = await validateTelefono(form.telefono);
-          if (!telefonoValido) {
-            setError("Este número de teléfono ya está registrado");
-            setIsLoading(false);
-            return;
-          }
+          const telefonoValido = await validateTelefono(form.telefono)
+          if (!telefonoValido) { setError("Este número de teléfono ya está registrado"); setIsLoading(false); return }
         }
-      } catch (validationError) {
-        console.warn('Error en validación, continuando con el registro:', validationError.message);
-        // Continuamos con el registro y dejamos que el backend maneje las validaciones
-      }
+      } catch (validationError) { /* continue */ }
 
-      // Registrar al usuario
-      console.log('Enviando datos de registro:', {
-        email: form.email,
-        nombre: form.nombre,
-        apellido: form.apellido,
-        telefono: form.telefono ? 'Sí (oculto por privacidad)' : 'No proporcionado'
-      });
-
-      await register(form);
-      console.log('Registro exitoso, redirigiendo a inicio');
-      navigate('/');
+      await register(form)
+      navigate('/')
     } catch (e) {
-      console.error('Error en el proceso de registro:', e);
-      // Mostrar mensaje de error más amigable y descriptivo
-      if (e.message && e.message.includes('correo electrónico')) {
-        setError(e.message);
-      } else if (e.message && e.message.includes('teléfono')) {
-        setError(e.message);
-      } else if (e.response && typeof e.response.data === 'string') {
-        setError(e.response.data);
-      } else {
-        setError(e.message || "Hubo un error durante el registro. Inténtalo nuevamente.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+      if (e.message && e.message.includes('correo electrónico')) setError(e.message)
+      else if (e.message && e.message.includes('teléfono')) setError(e.message)
+      else if (e.response && typeof e.response.data === 'string') setError(e.response.data)
+      else setError(e.message || "Hubo un error durante el registro. Inténtalo nuevamente.")
+    } finally { setIsLoading(false) }
   }
 
+  const triggerGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        await googleLogin({ credential: tokenResponse.access_token, ...tokenResponse })
+        navigate('/')
+      } catch (e) {
+        setError(e.message || 'Error al registrarse con Google')
+      } finally { setIsLoading(false) }
+    },
+    onError: () => setError('No se pudo conectar con Google.'),
+    flow: 'implicit',
+  })
+
   return (
-    <div className="ae-login-container">
-      <div className="ae-login-card">
-        <h1 className="ae-login-title">Crear cuenta</h1>
-        <p className="ae-login-subtitle">Únete a nosotros y disfruta de beneficios exclusivos</p>
+    <div className="mt-auth-wrapper">
+      {/* ── Left: Form ── */}
+      <div className="mt-auth-left">
+        <div className="mt-auth-form-box">
+          {/* Logo — click to go home */}
+          <Link to="/" className="mt-auth-logo">
+            <img src={logoImg} alt="MiTienda+" />
+          </Link>
 
-        {/* Mensaje de error */}
-        {error && (
-          <div className="ae-login-error">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-            </svg>
-            <span>{String(error)}</span>
-          </div>
-        )}
+          <h1 className="mt-auth-title">Crea tu cuenta</h1>
+          <p className="mt-auth-subtitle">Únete y disfruta de beneficios exclusivos.</p>
 
-        {/* Formulario */}
-        <form onSubmit={submit} className={`ae-login-form ${isMobile ? 'compact-form' : ''}`}>
-          <div className="ae-form-row">
-            <div className="ae-form-group">
-              <label className="ae-form-label">Nombre</label>
+          {/* Error */}
+          {error && (
+            <div className="mt-auth-error">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
+              <span>{String(error)}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={submit} className="mt-auth-form">
+            <div className="mt-field-row">
+              <div className="mt-field-group">
+                <label className="mt-field-label">Nombre <span className="mt-required">*</span></label>
+                <input
+                  type="text"
+                  className="mt-field-input"
+                  value={form.nombre}
+                  onChange={e => setForm({ ...form, nombre: e.target.value })}
+                  placeholder="Tu nombre"
+                  required
+                />
+              </div>
+              <div className="mt-field-group">
+                <label className="mt-field-label">Apellido <span className="mt-required">*</span></label>
+                <input
+                  type="text"
+                  className="mt-field-input"
+                  value={form.apellido}
+                  onChange={e => setForm({ ...form, apellido: e.target.value })}
+                  placeholder="Tu apellido"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mt-field-group">
+              <label className="mt-field-label">Correo electrónico <span className="mt-required">*</span></label>
               <input
-                type="text"
-                className="ae-form-input"
-                value={form.nombre}
-                onChange={e => setForm({ ...form, nombre: e.target.value })}
-                placeholder="Tu nombre"
+                type="email"
+                className="mt-field-input"
+                value={form.email}
+                onChange={e => setForm({ ...form, email: e.target.value })}
+                placeholder="ejemplo@correo.com"
                 required
               />
             </div>
 
-            <div className="ae-form-group">
-              <label className="ae-form-label">Apellido</label>
+            <div className="mt-field-group">
+              <label className="mt-field-label">Teléfono <span className="mt-required">*</span></label>
               <input
-                type="text"
-                className="ae-form-input"
-                value={form.apellido}
-                onChange={e => setForm({ ...form, apellido: e.target.value })}
-                placeholder="Tu apellido"
+                type="tel"
+                className="mt-field-input"
+                value={form.telefono}
+                onChange={e => setForm({ ...form, telefono: e.target.value })}
+                placeholder="999 999 999"
                 required
               />
             </div>
-          </div>
 
-          <div className="ae-form-group">
-            <label className="ae-form-label">Correo electrónico</label>
-            <input
-              type="email"
-              className="ae-form-input"
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-              placeholder="ejemplo@correo.com"
-              required
-            />
-          </div>
+            <div className="mt-field-group">
+              <label className="mt-field-label">Contraseña <span className="mt-required">*</span></label>
+              <div className="mt-password-wrap">
+                <input
+                  type={showPw ? 'text' : 'password'}
+                  className="mt-field-input"
+                  value={form.password}
+                  onChange={e => setForm({ ...form, password: e.target.value })}
+                  placeholder="Mínimo 6 caracteres"
+                  minLength="6"
+                  required
+                />
+                <button type="button" className="mt-toggle-pw" onClick={() => setShowPw(!showPw)} tabIndex={-1}>
+                  {showPw ? (
+                    <svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M1 1l22 22" /></svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                  )}
+                </button>
+              </div>
+            </div>
 
-          <div className="ae-form-group">
-            <label className="ae-form-label">Teléfono</label>
-            <input
-              type="tel"
-              className="ae-form-input"
-              value={form.telefono}
-              onChange={e => setForm({ ...form, telefono: e.target.value })}
-              placeholder="+51 999 999 999"
-              required
-            />
-          </div>
-
-          <div className="ae-form-group">
-            <label className="ae-form-label">Contraseña</label>
-            <input
-              type="password"
-              className="ae-form-input"
-              value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })}
-              placeholder="Mínimo 6 caracteres"
-              minLength="6"
-              required
-            />
-          </div>
-
-          <div className="ae-terms-checkbox">
-            <label className="ae-remember-me">
+            <label className="mt-terms">
               <input type="checkbox" required />
               <span>Acepto los <a href="/terminos" target="_blank">términos</a> y <a href="/privacidad" target="_blank">política de privacidad</a></span>
             </label>
-          </div>
 
-          <button
-            type="submit"
-            className="ae-login-button"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <svg className="ae-spinner" viewBox="0 0 50 50">
-                  <circle cx="25" cy="25" r="20" fill="none" strokeWidth="5"></circle>
-                </svg>
-                Creando cuenta...
-              </>
-            ) : 'Crear cuenta'}
+            <button type="submit" className="mt-auth-btn" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <svg className="mt-spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" /></svg>
+                  Creando cuenta...
+                </>
+              ) : 'Crear cuenta'}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="mt-auth-divider"><span>O regístrate con</span></div>
+
+          {/* Google — custom styled button */}
+          <button type="button" className="mt-google-btn" onClick={() => triggerGoogleLogin()} disabled={isLoading}>
+            <svg className="mt-google-icon" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+            </svg>
+            Registrarse con Google
           </button>
-        </form>
 
-        {/* Google Sign Up */}
-        <div className="ae-social-login">
-          <div className="ae-divider">
-            <span>O regístrate con</span>
-          </div>
-
-          <div className="ae-google-btn-wrapper">
-            <GoogleLogin
-              onSuccess={async (credentialResponse) => {
-                setIsLoading(true)
-                setError(null)
-                try {
-                  await googleLogin(credentialResponse)
-                  navigate('/')
-                } catch (e) {
-                  setError(e.message || 'Error al registrarse con Google')
-                } finally {
-                  setIsLoading(false)
-                }
-              }}
-              onError={() => setError('No se pudo conectar con Google. Inténtalo de nuevo.')}
-              text="signup_with"
-              shape="rectangular"
-              theme="outline"
-              size="large"
-              width="100%"
-              locale="es"
-            />
+          {/* Switch */}
+          <div className="mt-auth-switch">
+            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link>
           </div>
         </div>
+      </div>
 
-        {/* Enlace a login */}
-        <div className="ae-signup-link">
-          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link>
-        </div>
+      {/* ── Right: Art ── */}
+      <div className="mt-auth-right">
+        <img src={loginArt} alt="" className="mt-auth-art" />
       </div>
     </div>
   )

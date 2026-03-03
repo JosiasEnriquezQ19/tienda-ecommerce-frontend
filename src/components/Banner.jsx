@@ -29,7 +29,7 @@ const SLIDES = [
     title: "Laptops de Alto Rendimiento",
     subtitle: "PARA GAMERS Y PROS",
     description: "Equipos potentes para trabajo pesado y gaming de última generación. Potencia tu día.",
-    image: "https://dlcdnwebimgs.asus.com/gain/49d0dd10-1437-4560-9dc6-0428d02245b7/w800",
+    image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&fit=crop",
     link: "/categoria/laptops",
     buttonText: "Comprar Ahora",
     color: "dark"

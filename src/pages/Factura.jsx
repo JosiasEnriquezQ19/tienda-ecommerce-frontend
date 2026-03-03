@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { API } from '../api'
 import { AuthContext } from '../auth/AuthContext'
+import logoImg from '../assets/logo-ecommerce.png'
 import './Factura.css'
 
 // track in-flight pedidoId requests to avoid duplicate network calls (React StrictMode)
@@ -79,8 +80,8 @@ export default function Factura() {
       try {
         const navFact = location && location.state && location.state.factura ? location.state.factura : null
         if (!navFact) return
-  // accept 'fecha de emision' (with/without accent) used by some backends
-  const hasDate = navFact?.fechaEmision || (navFact && (navFact['fecha de emision'] || navFact['fecha de emisión'])) || navFact?.fecha || navFact?.fecha_emision || navFact?.createdAt || navFact?.issuedAt
+        // accept 'fecha de emision' (with/without accent) used by some backends
+        const hasDate = navFact?.fechaEmision || (navFact && (navFact['fecha de emision'] || navFact['fecha de emisión'])) || navFact?.fecha || navFact?.fecha_emision || navFact?.createdAt || navFact?.issuedAt
         const hasEstado = navFact?.estadoPago || navFact?.estado || navFact?.status || navFact?.paymentStatus
         if (hasDate && hasEstado) return
         const fid = navFact?.id || navFact?.facturaId || navFact?.numero || null
@@ -271,7 +272,7 @@ export default function Factura() {
     if (typeof src !== 'string') return '/placeholder-product.jpg'
     if (src.startsWith('http://') || src.startsWith('https://')) return src
     if (src.startsWith('//')) return window.location.protocol + src
-    try { const apiUrl = new URL(API); return src.startsWith('/') ? apiUrl.origin + src : apiUrl.origin + '/' + src.replace(/^\//, '') } catch(e) { return src }
+    try { const apiUrl = new URL(API); return src.startsWith('/') ? apiUrl.origin + src : apiUrl.origin + '/' + src.replace(/^\//, '') } catch (e) { return src }
   }
 
   const normalizeItem = (it) => {
@@ -332,7 +333,7 @@ export default function Factura() {
               <div>Subtotal: S/ {Number(pedido.subtotal || pedido.monto || pedido.total || 0).toFixed(2)}</div>
               <div>Total: S/ {Number(pedido.total || pedido.monto || 0).toFixed(2)}</div>
             </div>
-            <div style={{display:'flex',gap:8,marginTop:12}}>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
               <button className="ae-login-button" onClick={() => navigate(-1)}>Volver</button>
               <button className="ae-login-button" onClick={async () => {
                 try {
@@ -341,9 +342,9 @@ export default function Factura() {
                   const headers = token ? { Authorization: `Bearer ${token}`, Accept: 'application/json' } : { Accept: 'application/json' }
                   const body = { pedidoId: pedido.pedidoId || pedido.id || pedido.PedidoId }
                   const created = await axios.post(`${API}/Facturas`, body, { headers })
-                    // if created returns the factura, use it and navigate, else set and navigate
-                    const f = created.data || created
-                    setFactura(f)
+                  // if created returns the factura, use it and navigate, else set and navigate
+                  const f = created.data || created
+                  setFactura(f)
                 } catch (err) {
                   alert('No se pudo crear la factura. Revisa la consola para más detalles.'); console.error(err)
                 } finally { setLoading(false) }
@@ -353,7 +354,7 @@ export default function Factura() {
         ) : (
           <>
             <p>No se encontró una factura ni el pedido asociado.</p>
-            <div style={{display:'flex',gap:8,marginTop:12}}>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
               <button className="ae-login-button" onClick={() => navigate(-1)}>Volver</button>
             </div>
           </>
@@ -400,16 +401,15 @@ export default function Factura() {
   const estadoLabel = estadoRaw ? String(estadoRaw).toUpperCase() : '—'
   const estadoClass = estadoRaw ? String(estadoRaw).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'unknown'
 
-  
+
 
   return (
     <div className="ae-invoice-container">
       <div className="ae-invoice-card ae-invoice-premium">
         <div className="ae-invoice-top">
           <div className="ae-invoice-brand">
-            <div className="ae-invoice-logo-mark">MT</div>
+            <img src={logoImg} alt="MiTienda+" className="ae-invoice-logo-img" style={{ height: '50px', width: 'auto' }} />
             <div className="ae-invoice-brand-text">
-              <div className="ae-store-name">Mi Tienda+</div>
               <div className="ae-store-sub">Comprobante fiscal</div>
             </div>
           </div>
@@ -432,9 +432,9 @@ export default function Factura() {
 
           <div className="ae-invoice-block ae-invoice-seller">
             <h4>Vendedor</h4>
-            <p className="ae-strong">Mi Tienda+</p>
+            <p className="ae-strong"><img src={logoImg} alt="MiTienda+" style={{ height: '24px', verticalAlign: 'middle' }} /></p>
             <p>RUC: 20389345361</p>
-            <p>contacto@mitienda.example</p>
+            <p>soporte@mitiendaplus.com</p>
           </div>
 
           <div className="ae-invoice-block ae-invoice-refs">
@@ -454,10 +454,10 @@ export default function Factura() {
               <table className="ae-invoice-table ae-premium-table">
                 <thead>
                   <tr>
-                    <th style={{width: '48%'}}>Producto</th>
-                    <th style={{width: '12%'}}>Cantidad</th>
-                    <th style={{width: '20%'}}>Precio unitario</th>
-                    <th style={{width: '20%'}}>Importe</th>
+                    <th style={{ width: '48%' }}>Producto</th>
+                    <th style={{ width: '12%' }}>Cantidad</th>
+                    <th style={{ width: '20%' }}>Precio unitario</th>
+                    <th style={{ width: '20%' }}>Importe</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -501,8 +501,8 @@ export default function Factura() {
         </div>
 
         <div className="ae-invoice-footer">
-          <p>Mi Tienda+ — Comprobante fiscal</p>
-          <div style={{marginTop:8}}>
+          <p><img src={logoImg} alt="MiTienda+" style={{ height: '20px', verticalAlign: 'middle' }} /> — Comprobante fiscal</p>
+          <div style={{ marginTop: 8 }}>
             <button className="ae-login-button" onClick={() => navigate('/pedidos')}>Volver a mis pedidos</button>
           </div>
         </div>
