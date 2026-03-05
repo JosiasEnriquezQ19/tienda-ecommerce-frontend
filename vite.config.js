@@ -14,6 +14,9 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path // Keep /api in the path
       }
+    },
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
     }
   }
 })

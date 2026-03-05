@@ -129,7 +129,7 @@ export default function DetalleProducto() {
   };
 
   const onAddToCart = () => {
-    const item = { 
+    const item = {
       productoId: safeGet(producto, 'productoId', 'ProductoId', 'id'),
       nombre: safeGet(producto, 'nombre', 'Nombre') || 'Producto',
       precio: safeGet(producto, 'precio', 'Precio') || 0,
@@ -213,7 +213,7 @@ export default function DetalleProducto() {
   if (error) return (
     <div className="ae-error">
       <svg viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
       </svg>
       <p>Error al cargar el producto: {String(error)}</p>
       <button onClick={() => window.location.reload()} className="ae-retry-btn">Reintentar</button>
@@ -223,7 +223,7 @@ export default function DetalleProducto() {
   if (!producto) return (
     <div className="ae-empty">
       <svg viewBox="0 0 24 24">
-        <path d="M22 13h-8v-2h8v2zm0-6h-8v2h8V7zm-8 10h8v-2h-8v2zm-2-8v6c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2zm-1.5 6l-2.25-3-1.75 2.26-1.25-1.51L3.5 15h7z"/>
+        <path d="M22 13h-8v-2h8v2zm0-6h-8v2h8V7zm-8 10h8v-2h-8v2zm-2-8v6c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2zm-1.5 6l-2.25-3-1.75 2.26-1.25-1.51L3.5 15h7z" />
       </svg>
       <h3>Producto no encontrado</h3>
       <p>El producto que buscas no está disponible o no existe</p>
@@ -246,12 +246,12 @@ export default function DetalleProducto() {
   const categoriaNombre = safeGet(producto, 'categoriaNombre', 'CategoriaNombre', 'categoria_nombre') || 'Sin categoría';
   const marca = safeGet(producto, 'marca', 'Marca') || 'Genérico';
   const especificaciones = safeGet(producto, 'especificaciones', 'Especificaciones') || {};
-  
+
   // Calcular rating promedio real basado en comentarios
-  const rating = comentarios.length > 0 
-    ? comentarios.reduce((sum, c) => sum + c.estrellas, 0) / comentarios.length 
+  const rating = comentarios.length > 0
+    ? comentarios.reduce((sum, c) => sum + c.estrellas, 0) / comentarios.length
     : 0;
-  
+
   const reviews = safeGet(producto, 'reviews', 'Reviews') || 128;
 
   return (
@@ -276,20 +276,22 @@ export default function DetalleProducto() {
       {/* Main Product Section */}
       <div className="ae-container">
         <div className="ae-product-main">
-          {/* Product Images */}
+          {/* Product Images Div (Izquierda) */}
           <div className="ae-product-gallery">
             <div className="ae-main-image">
               <span className="ae-image-counter">{selectedImage + 1} / {imagenes.length}</span>
               <div className="ae-zoom-container">
-                <img 
-                  src={imagenes[selectedImage]} 
-                  alt={nombre} 
-                  className="ae-product-image"
-                />
+                <Zoom zoomMargin={45}>
+                  <img
+                    src={imagenes[selectedImage]}
+                    alt={nombre}
+                    className="ae-product-image"
+                  />
+                </Zoom>
               </div>
               <div className="ae-image-dots">
                 {imagenes.map((_, idx) => (
-                  <span 
+                  <span
                     key={idx}
                     className={`ae-dot ${selectedImage === idx ? 'active' : ''}`}
                     onClick={() => setSelectedImage(idx)}
@@ -297,75 +299,62 @@ export default function DetalleProducto() {
                 ))}
               </div>
             </div>
-            <div className="ae-thumbnails">
-              {imagenes.map((img, idx) => (
-                <div 
-                  key={idx} 
-                  className={`ae-thumbnail ${selectedImage === idx ? 'active' : ''}`}
-                  onClick={() => setSelectedImage(idx)}
-                >
-                  <img src={img} alt={`Vista ${idx + 1}`} />
-                </div>
-              ))}
-            </div>
+            {/* Thumbnails */}
+            {imagenes.length > 1 && (
+              <div className="ae-thumbnails">
+                {imagenes.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`ae-thumbnail ${selectedImage === idx ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(idx)}
+                  >
+                    <img src={img} alt={`Vista ${idx + 1}`} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Product Info */}
+          {/* Product Info Div (Derecha) */}
           <div className="ae-product-info">
-            <div className="ae-product-header">
-              <h1 className="ae-product-title">{nombre}</h1>
-            </div>
+            <h1 className="ae-product-title">{nombre}</h1>
 
             <div className="ae-product-rating">
-              <span className="ae-rating-number">{rating.toFixed(1)}</span>
-              {renderRatingStars(rating)}
-              <span className="ae-review-count">({comentarios.length})</span>
+              <div className="ae-rating">{renderRatingStars(rating)}</div>
+              <span className="ae-rating-number">({rating.toFixed(1)})</span>
+              <span className="ae-review-count">{comentarios.length} Comentarios</span>
+              <span className="ae-separator">•</span>
+              <span className="ae-sold-count">{reviews} Vendidos</span>
             </div>
 
             <div className="ae-price-section">
-              {descuento > 0 && (
+              {descuento > 0 ? (
                 <>
+                  <div className="ae-price-current-line">
+                    <span className="ae-price-current">S/ {formatPrice(precio)}</span>
+                    <span className="ae-discount-badge">-{descuento}%</span>
+                  </div>
                   <div className="ae-price-original-line">
                     <span className="ae-price-original">S/ {formatPrice(precioOriginal)}</span>
                   </div>
-                  <div className="ae-price-current-line">
-                    <span className="ae-price-current">S/ {formatPrice(precio)}</span>
-                    <span className="ae-discount-badge">{descuento}% OFF</span>
-                  </div>
                 </>
-              )}
-              {descuento === 0 && (
+              ) : (
                 <div className="ae-price-current-line">
                   <span className="ae-price-current">S/ {formatPrice(precio)}</span>
                 </div>
               )}
             </div>
 
-            {descuento > 0 && (
-              <div className="ae-installments">
-                <span className="ae-installments-text">
-                  6 cuotas de S/ {formatPrice(precio / 6)} <span className="ae-no-interest">sin interés</span>
-                </span>
+            <div className="ae-variant-group">
+              <span className="ae-variant-label">Marca: <span>{marca}</span></span>
+              <div className="ae-variant-options">
+                <button className="ae-variant-btn active">{marca}</button>
               </div>
-            )}
-
-            <div className="ae-shipping-info">
-              <FaTruck className="ae-shipping-icon" />
-              <span>Envío gratis a todo el país</span>
             </div>
 
-            <div className="ae-stock-info">
-              {stock > 0 ? (
-                <span className="ae-in-stock">Disponible ({stock} unidades)</span>
-              ) : (
-                <span className="ae-out-of-stock">Agotado</span>
-              )}
-            </div>
-
-            <div className="ae-quantity-selector">
-              <label>Cantidad:</label>
+            <div className="ae-action-row">
               <div className="ae-quantity-controls">
-                <button 
+                <button
                   className="ae-quantity-btn"
                   onClick={() => setCantidad(Math.max(1, cantidad - 1))}
                   disabled={cantidad <= 1}
@@ -373,7 +362,7 @@ export default function DetalleProducto() {
                   -
                 </button>
                 <span className="ae-quantity-value">{cantidad}</span>
-                <button 
+                <button
                   className="ae-quantity-btn"
                   onClick={() => setCantidad(cantidad + 1)}
                   disabled={cantidad >= stock}
@@ -381,75 +370,77 @@ export default function DetalleProducto() {
                   +
                 </button>
               </div>
+              <span className="ae-stock-info">Stock: <b>{stock}</b></span>
             </div>
 
-            <div className="ae-action-buttons">
-              <button 
-                className="ae-add-to-cart"
-                onClick={onAddToCart}
-                disabled={stock <= 0}
-              >
-                <FaShoppingCart className="ae-cart-icon" />
-                Añadir al carrito
-              </button>
-              <button 
+            <div className="ae-main-buttons">
+              <button
                 className="ae-buy-now"
                 onClick={() => { onAddToCart(); navigate('/carrito'); }}
                 disabled={stock <= 0}
               >
-                Comprar ahora
+                Comprar Ahora
+              </button>
+              <button
+                className="ae-add-to-cart"
+                onClick={onAddToCart}
+                disabled={stock <= 0}
+              >
+                <FaShoppingCart className="ae-cart-icon" /> Añadir al carrito
               </button>
             </div>
 
-            <div className="ae-payment-methods">
-              <span>Métodos de pago:</span>
-              <div className="ae-payment-icons">
-                <img src="https://logosenvector.com/logo/img/yape-37283.png" alt="Yape" />
-                <img src="https://images.seeklogo.com/logo-png/38/1/plin-logo-png_seeklogo-386806.png" alt="Plin" />
-                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140803.png" alt="transferencia bancaria" />
+            <div style={{ marginTop: '32px' }}>
+              <div className="ae-delivery-info">
+                <div className="ae-info-row">
+                  <FaTruck /> <span>Envío gratis a todo el país disponible.</span>
+                </div>
+                <div className="ae-info-row">
+                  <FaShieldAlt style={{ color: '#a855f7' }} /> <span>Transacción garantizada o devolución sin fricciones.</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Product Tabs */}
+        {/* Product Tabs (Abajo, separados cleanly) */}
         <div className="ae-product-tabs">
           <div className="ae-tab-header">
-            <button 
+            <button
               className={`ae-tab-btn ${activeTab === 'descripcion' ? 'active' : ''}`}
               onClick={() => setActiveTab('descripcion')}
             >
               Descripción
             </button>
-            <button 
+            <button
               className={`ae-tab-btn ${activeTab === 'especificaciones' ? 'active' : ''}`}
               onClick={() => setActiveTab('especificaciones')}
             >
               Especificaciones
             </button>
-            <button 
+            <button
               className={`ae-tab-btn ${activeTab === 'opiniones' ? 'active' : ''}`}
               onClick={() => setActiveTab('opiniones')}
             >
-              Opiniones ({comentarios.length})
+              Opiniones
             </button>
           </div>
 
           <div className="ae-tab-content">
             {activeTab === 'descripcion' && (
               <div className="ae-product-description">
-                <h3>Descripción del producto</h3>
+                <h3>{nombre} – Resumen</h3>
                 <p>
                   {descripcion && descripcion.length > 300 && !isDescriptionExpanded
                     ? `${descripcion.substring(0, 300)}...`
                     : descripcion}
                 </p>
                 {descripcion && descripcion.length > 300 && (
-                  <button 
+                  <button
                     className="ae-see-more-btn"
                     onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
                   >
-                    {isDescriptionExpanded ? 'Ver menos' : 'Ver más'}
+                    {isDescriptionExpanded ? 'Mostrar menos' : 'Leer más...'}
                   </button>
                 )}
               </div>
@@ -457,26 +448,13 @@ export default function DetalleProducto() {
 
             {activeTab === 'especificaciones' && (
               <div className="ae-product-specs">
-                <h3>Especificaciones técnicas</h3>
                 <table className="ae-specs-table">
                   <tbody>
-                    <tr>
-                      <th>Marca</th>
-                      <td>{marca}</td>
-                    </tr>
-                    <tr>
-                      <th>Modelo</th>
-                      <td>{safeGet(producto, 'modelo', 'Modelo') || 'No especificado'}</td>
-                    </tr>
-                    <tr>
-                      <th>Categoría</th>
-                      <td>{categoriaNombre}</td>
-                    </tr>
+                    <tr><th>Marca</th><td>{marca}</td></tr>
+                    <tr><th>Modelo</th><td>{safeGet(producto, 'modelo', 'Modelo') || 'No especificado'}</td></tr>
+                    <tr><th>Categoría</th><td>{categoriaNombre}</td></tr>
                     {Object.entries(especificaciones).map(([key, value]) => (
-                      <tr key={key}>
-                        <th>{key}</th>
-                        <td>{value}</td>
-                      </tr>
+                      <tr key={key}><th>{key}</th><td>{value}</td></tr>
                     ))}
                   </tbody>
                 </table>
@@ -485,65 +463,53 @@ export default function DetalleProducto() {
 
             {activeTab === 'opiniones' && (
               <div className="ae-product-reviews">
-                <h3>Opiniones de clientes</h3>
                 <div className="ae-reviews-summary">
                   <div className="ae-average-rating">
-                    <span className="ae-rating-value">{comentarios.length > 0 ? rating.toFixed(1) : '0.0'}</span>
-                    <div className="ae-rating-stars">{renderRatingStars(rating)}</div>
-                    <span className="ae-rating-count">{comentarios.length} opiniones</span>
+                    <span className="ae-rating-title">Valoración de clientes</span>
+                    <span className="ae-rating-value">{comentarios.length > 0 ? rating.toFixed(1) : '0.0'} <span style={{ fontSize: '16px', color: '#999' }}>/ 5.0</span></span>
+                    <div className="ae-rating">{renderRatingStars(rating)}</div>
+                    <span className="ae-rating-count">{comentarios.length} opiniones • 100% satisfechos</span>
                   </div>
-                  <div style={{flex:1}}>
+
+                  <div style={{ flex: 1 }}>
                     {comentariosLoading ? (
-                      <div className="ae-loading"><div className="ae-spinner" />Cargando opiniones...</div>
+                      <div>Cargando...</div>
                     ) : comentariosError ? (
                       <div className="ae-error">{comentariosError}</div>
                     ) : (
                       <>
-                        {comentarios.length === 0 && (
-                          <div className="ae-reviews-empty">
-                            <p>Este producto aún no tiene opiniones. ¡Sé el primero en opinar!</p>
-                          </div>
-                        )}
-                        <button className="ae-write-review" onClick={openReviewForm}>Escribir opinión</button>
+                        <button className="ae-write-review" onClick={openReviewForm}>Escribir mi reseña</button>
                         {showReviewForm && (
                           <form className="ae-review-form" onSubmit={handleSubmitReview}>
                             <div className="ae-star-input">
-                              {[1,2,3,4,5].map(n => (
-                                <button type="button" key={n} className={`ae-star-input-btn ${reviewRating>=n? 'active':''}`} onClick={() => handleStarClick(n)} aria-label={`${n} estrellas`}>
+                              {[1, 2, 3, 4, 5].map(n => (
+                                <button type="button" key={n} className={`ae-star-input-btn ${reviewRating >= n ? 'active' : ''}`} onClick={() => handleStarClick(n)}>
                                   <FaStar />
                                 </button>
                               ))}
                             </div>
-                            <textarea placeholder="Cuenta tu experiencia (opcional)" value={reviewText} onChange={(e)=>setReviewText(e.target.value)} />
+                            <textarea placeholder="Cuéntanos más detalladamente (opcional)" value={reviewText} onChange={(e) => setReviewText(e.target.value)} />
                             {reviewError && <div className="ae-review-error">{reviewError}</div>}
                             {reviewSuccess && <div className="ae-review-success">{reviewSuccess}</div>}
-                            <div style={{display:'flex',gap:8,marginTop:8}}>
-                              <button type="submit" className="ae-save-btn">Enviar opinión</button>
+                            <div style={{ display: 'flex' }}>
+                              <button type="submit" className="ae-save-btn">Publicar opinión</button>
                               <button type="button" className="ae-secondary-button" onClick={() => { setShowReviewForm(false); setReviewError(''); }}>Cancelar</button>
                             </div>
                           </form>
                         )}
                         {comentarios.length > 0 && (
-                          <div className="ae-comments-list">
+                          <div className="ae-comments-list" style={{ marginTop: '24px' }}>
                             {comentarios.map(c => (
                               <div key={c.comentarioId} className="ae-comment-card">
                                 <div className="ae-comment-header">
-                                  <div className="ae-comment-avatar">
-                                    {"A"}
-                                  </div>
+                                  <div className="ae-comment-avatar">{(c.usuarioNombre || 'A')[0]}</div>
                                   <div className="ae-comment-info">
-                                    <span className="ae-comment-author">Anonymous</span>
-                                    <div className="ae-comment-rating">{renderRatingStars(c.estrellas)}</div>
-                                    <span className="ae-comment-date">{new Date(c.fechaComentario).toLocaleDateString('es-ES', { 
-                                      year: 'numeric', 
-                                      month: 'long', 
-                                      day: 'numeric' 
-                                    })}</span>
+                                    <span className="ae-comment-author">{c.usuarioNombre || 'Anonymous'}</span>
+                                    <span className="ae-comment-date">{new Date(c.fechaComentario).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                                   </div>
+                                  <div className="ae-rating" style={{ marginLeft: 'auto' }}>{renderRatingStars(c.estrellas)}</div>
                                 </div>
-                                {c.texto && (
-                                  <div className="ae-comment-text">{c.texto}</div>
-                                )}
+                                {c.texto && <div className="ae-comment-text">{c.texto}</div>}
                               </div>
                             ))}
                           </div>
@@ -557,75 +523,32 @@ export default function DetalleProducto() {
           </div>
         </div>
 
-        {/* Recomendaciones personalizadas */}
-        <div className="ae-related-products">
-          <h2 className="ae-section-title">Recomendaciones para ti</h2>
-          <p className="ae-recommendation-subtitle">Basado en tus preferencias y este producto</p>
-          <div className="ae-related-grid">
-            {related.length > 0 ? (
-              related.map(prod => {
+        {/* Recomendaciones personalizadas (si las hay) */}
+        {related.length > 0 && (
+          <div style={{ marginTop: '48px' }}>
+            <h2 style={{ fontSize: '22px', borderBottom: '1px solid #eaeaea', paddingBottom: '16px', marginBottom: '24px' }}>Recomendaciones basadas en este modelo</h2>
+            <div className="ae-related-grid" style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
+              {related.map(prod => {
                 const rId = safeGet(prod, 'productoId', 'ProductoId', 'id');
                 const rNombre = safeGet(prod, 'nombre', 'Nombre') || 'Producto';
                 const rPrecio = safeGet(prod, 'precio', 'Precio') || 0;
-                const rPrecioOriginal = safeGet(prod, 'precioOriginal', 'PrecioOriginal') || rPrecio;
-                const rDescuento = rPrecioOriginal > rPrecio ? Math.round((1 - rPrecio / rPrecioOriginal) * 100) : 0;
-                const rImagen = (safeGet(prod, 'imagenes', 'Imagenes') || [])[0] || 
-                                safeGet(prod, 'imagenUrl', 'ImagenUrl') || 
-                                'https://via.placeholder.com/300x200';
-                const rRating = safeGet(prod, 'rating', 'Rating') || 4.0;
-                const rCategoria = safeGet(prod, 'categoria', 'Categoria') || 'General';
+                const rImagen = (safeGet(prod, 'imagenes', 'Imagenes') || [])[0] || safeGet(prod, 'imagenUrl', 'ImagenUrl');
 
                 return (
-                  <div key={rId} className="ae-related-card">
-                    <div className="ae-related-image">
-                      <img src={rImagen} alt={rNombre} />
-                      {rDescuento > 0 && (
-                        <div className="ae-related-discount">-{rDescuento}%</div>
-                      )}
-                      <div className="ae-recommendation-tag">Recomendado</div>
+                  <Link key={rId} to={`/producto/${rId}`} onClick={() => window.scrollTo(0, 0)} style={{ minWidth: '180px', textDecoration: 'none', color: 'inherit' }}>
+                    <div style={{ border: '1px solid #eaeaea', borderRadius: '12px', padding: '12px', background: '#fff', height: '100%' }}>
+                      <div style={{ aspectRatio: '1/1', background: '#fafafa', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px', marginBottom: '12px' }}>
+                        <img src={rImagen} alt={rNombre} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                      </div>
+                      <h4 style={{ fontSize: '14px', margin: '0 0 8px', fontWeight: '600' }}>{rNombre}</h4>
+                      <strong style={{ fontSize: '16px' }}>S/ {formatPrice(rPrecio)}</strong>
                     </div>
-                    <div className="ae-related-info">
-                      <div className="ae-related-category">{rCategoria}</div>
-                      <h3 className="ae-related-title">
-                        <Link to={`/producto/${rId}`}>{rNombre}</Link>
-                      </h3>
-                      <div className="ae-related-rating">
-                        {renderRatingStars(rRating)}
-                      </div>
-                      <div className="ae-related-price">
-                        <span className="ae-current-price">S/ {formatPrice(rPrecio)}</span>
-                        {rDescuento > 0 && (
-                          <span className="ae-original-price">S/ {formatPrice(rPrecioOriginal)}</span>
-                        )}
-                      </div>
-                      <div className="ae-related-actions">
-                        <Link to={`/producto/${rId}`} className="ae-view-btn" onClick={() => window.scrollTo(0,0)}>
-                          Ver
-                        </Link>
-                        <button className="ae-quick-add" onClick={() => addItem({
-                          productoId: rId,
-                          nombre: rNombre,
-                          precio: rPrecio,
-                          cantidad: 1,
-                          imagen: rImagen,
-                          descripcion: safeGet(prod, 'descripcion', 'Descripcion') || ''
-                        })}>Añadir al carrito</button>
-                      </div>
-                    </div>
-                  </div>
+                  </Link>
                 );
-              })
-            ) : (
-              <div className="ae-no-recommendations">
-                <svg viewBox="0 0 24 24" className="ae-no-recommendations-icon">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <p>No hay recomendaciones disponibles en este momento.</p>
-                <p>Te sugerimos revisar nuestros <Link to="/productos/destacados">productos destacados</Link>.</p>
-              </div>
-            )}
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modal de inicio de sesión */}
