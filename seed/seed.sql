@@ -1,7 +1,7 @@
 -- Tabla de Comentarios de Productos
 
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS SimpleMarketplaceDB2;
+CREATE DATABASE IF NOT EXISTS SimpleMarketplaceDB3;
 USE SimpleMarketplaceDB2;
 
 -- Tabla de Usuarios (actualizada con campo estado)

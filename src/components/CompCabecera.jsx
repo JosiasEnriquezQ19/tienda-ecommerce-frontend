@@ -170,35 +170,35 @@ export default function CompCabecera({ totalProductos = 0 }) {
                 <Link to="/" className="ae-logo">
                   <img src={logoImg} alt="MiTienda+" className="ae-logo-img" />
                 </Link>
-              </div>
 
-              {/* ── Navigation ── */}
-              <nav className="ae-nav">
-                <div className="ae-nav-item ae-nav-dropdown">
-                  <span className="ae-nav-link ae-nav-link-dropdown">
-                    Categorías
-                    <svg className="ae-nav-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
-                  </span>
-                  <div className="ae-dropdown-panel">
-                    {dbCategories.map(cat => (
-                      <Link
-                        key={cat.categoriaId}
-                        to={`/?category=${encodeURIComponent(cat.nombre)}`}
-                        className="ae-dropdown-cat-item"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          navigate(`/?category=${encodeURIComponent(cat.nombre)}`);
-                        }}
-                      >
-                        <img src={cat.imagenUrl || 'https://via.placeholder.com/24'} alt={cat.nombre} className="ae-nav-cat-img" />
-                        <span>{cat.nombre}</span>
-                      </Link>
-                    ))}
+                {/* ── Navigation ── */}
+                <nav className="ae-nav">
+                  <div className="ae-nav-item ae-nav-dropdown">
+                    <span className="ae-nav-link ae-nav-link-dropdown">
+                      Categorías
+                      <svg className="ae-nav-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </span>
+                    <div className="ae-dropdown-panel">
+                      {dbCategories.map(cat => (
+                        <Link
+                          key={cat.categoriaId}
+                          to={`/?category=${encodeURIComponent(cat.nombre)}`}
+                          className="ae-dropdown-cat-item"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/?category=${encodeURIComponent(cat.nombre)}`);
+                          }}
+                        >
+                          <img src={cat.imagenUrl || 'https://via.placeholder.com/24'} alt={cat.nombre} className="ae-nav-cat-img" />
+                          <span>{cat.nombre}</span>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <Link to="/mas-vendidos" className="ae-nav-link">Más vendidos</Link>
-                <Link to="/" className="ae-nav-link">Novedades</Link>
-              </nav>
+                  <Link to="/mas-vendidos" className="ae-nav-link">Más vendidos</Link>
+                  <Link to="/mejor-valorados" className="ae-nav-link">Lo mejor valorado</Link>
+                </nav>
+              </div>
 
               {/* Buscador */}
               <div className={`ae-search-wrapper ${mobileSearchOpen ? 'mobile-active' : ''}`} ref={searchRef}>
@@ -288,7 +288,24 @@ export default function CompCabecera({ totalProductos = 0 }) {
                       onClick={() => setShowDropdown(s => !s)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowDropdown(s => !s); }}
                     >
-                      <svg className="ae-user-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                      <div className="ae-user-avatar">
+                        {(user.imagenUrl || user.imagen || user.profilePicture || user.picture) ? (
+                          <img
+                            src={user.imagenUrl || user.imagen || user.profilePicture || user.picture}
+                            alt={user.nombre || "Perfil"}
+                            className="ae-user-avatar-img"
+                          />
+                        ) : (
+                          <div className="ae-user-avatar-initials">
+                            {(() => {
+                              const name = user.nombre || user.name || user.email || 'U';
+                              const parts = name.split(' ').filter(Boolean);
+                              if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                              return name.substring(0, 2).toUpperCase();
+                            })()}
+                          </div>
+                        )}
+                      </div>
                       <span className="ae-user-name">
                         {user.nombre || user.name || (user.email || '').split('@')[0] || 'Usuario'}
                       </span>
@@ -315,9 +332,8 @@ export default function CompCabecera({ totalProductos = 0 }) {
                   </div>
                 ) : (
                   <div className="ae-auth-buttons">
-                    <Link to="/login" className="ae-login-btn">
-                      <svg viewBox="0 0 24 24" className="ae-btn-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                      Ingresar
+                    <Link to="/login" className="ae-login-icon-btn" aria-label="Ingresar">
+                      <svg viewBox="0 0 24 24" className="ae-user-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                     </Link>
                   </div>
                 )}
@@ -371,7 +387,7 @@ export default function CompCabecera({ totalProductos = 0 }) {
           <div className="ae-mobile-nav-section">
             <h4>Secciones</h4>
             <Link to="/mas-vendidos" className="ae-mobile-nav-link" onClick={() => setMobileNavOpen(false)}>Más vendidos</Link>
-            <Link to="/" className="ae-mobile-nav-link" onClick={() => setMobileNavOpen(false)}>Novedades</Link>
+            <Link to="/mejor-valorados" className="ae-mobile-nav-link" onClick={() => setMobileNavOpen(false)}>Lo mejor valorado</Link>
           </div>
         </div>
       </div>

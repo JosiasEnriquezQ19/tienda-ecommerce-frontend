@@ -24,6 +24,12 @@
   --mt-shadow-lg: 0 8px 30px rgba(0, 0, 0, .12);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* ── Page ── */
 .ae-products-page {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -72,10 +78,28 @@
   letter-spacing: -.3px;
 }
 
+/* ── Categories Carousel (Auto-scroll JS + Manual) ── */
+.mt-categories-carousel {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  padding: 10px 0;
+  scrollbar-width: none;
+  /* Firefox */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.mt-categories-carousel::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
+}
+
 .mt-categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  display: flex;
   gap: 16px;
+  width: max-content;
 }
 
 .mt-category-card {
@@ -83,6 +107,8 @@
   border-radius: var(--mt-radius);
   overflow: hidden;
   aspect-ratio: 1 / 1.1;
+  width: 200px;
+  flex-shrink: 0;
   cursor: pointer;
   text-decoration: none;
   transition: transform .25s, box-shadow .25s;
@@ -441,18 +467,29 @@
     padding: 24px 16px;
   }
 
+  .mt-categories-carousel {
+    margin: 0 -16px;
+    width: auto;
+    padding: 0 16px 16px;
+    scroll-snap-type: x mandatory;
+  }
+
   .mt-categories-grid {
-    display: flex;
-    overflow-x: auto;
     gap: 12px;
-    padding-bottom: 8px;
-    scrollbar-width: thin;
+    padding: 0;
+    margin: 0;
+  }
+
+  .mt-categories-carousel::-webkit-scrollbar {
+    display: none;
   }
 
   .mt-category-card {
     min-width: 140px;
     flex: 0 0 auto;
     height: 180px;
+    scroll-snap-align: start;
+    border-radius: 12px;
   }
 
   .ae-products-header {
@@ -490,8 +527,8 @@
 
 @media (max-width: 576px) {
   .mt-category-card {
-    min-width: 120px;
-    height: 150px;
+    width: 125px;
+    height: 160px;
   }
 
   .mt-category-label {

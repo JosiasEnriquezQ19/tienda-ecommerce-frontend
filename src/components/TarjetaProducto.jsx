@@ -9,9 +9,11 @@ export default function TarjetaProducto({ p, product }) {
   const item = p || product || {}
   const nombre = item?.nombre || item?.title || 'Producto'
   const precio = item?.precio || item?.price || 0
+  const precioAntes = item?.precioAntes || 0
   const imagen = item?.imagenUrl || item?.url || item?.image || 'https://via.placeholder.com/400x300'
   const descripcion = item?.descripcion || item?.description || ''
-  const destacado = item?.destacado || item?.oferta || item?.discount
+  const hasDescuento = precioAntes > precio
+  const destacado = item?.destacado || item?.oferta || item?.discount || hasDescuento
   const rating = item?.rating ?? item?.valoracion ?? 0
   const envioGratis = item?.envioGratis || item?.freeShipping || false
   const estado = (item?.estado || '').toString().toLowerCase()
@@ -55,21 +57,34 @@ export default function TarjetaProducto({ p, product }) {
     >
       <div className="producto-media">
         <img src={imagen} alt={nombre} loading="lazy" />
-        {destacado && <span className="badge">Oferta</span>}
+        {hasDescuento && (
+          <span className="badge badge-discount">
+            -{Math.round(((precioAntes - precio) / precioAntes) * 100)}%
+          </span>
+        )}
+        {!hasDescuento && destacado && <span className="badge">Oferta</span>}
         {isAgotado && <span className="badge badge-warning">Agotado</span>}
       </div>
       <div className="producto-body">
         <div className="producto-header">
           <h3 className="producto-title">{nombre}</h3>
-          <div className="precio">
-            <span className="precio-currency">S/</span>
-            <span className="precio-int">{priceParts.integer}</span>
-            <span className="precio-dec">.{priceParts.decimal}</span>
+          {item.marca && (
+            <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '-4px', marginBottom: '4px' }}>
+              {item.marca}
+            </div>
+          )}
+          <div className="precio-group">
+            {hasDescuento && (
+              <span className="precio-antes">S/ {precioAntes.toFixed(2)}</span>
+            )}
+            <div className="precio">
+              <span className="precio-currency">S/</span>
+              <span className="precio-int">{priceParts.integer}</span>
+              <span className="precio-dec">.{priceParts.decimal}</span>
+            </div>
           </div>
         </div>
-        <p className="producto-desc">
-          {descripcion.substring(0, 40)}{descripcion.length > 40 ? '...' : ''}
-        </p>
+
         <div className="producto-rating">
           <div className="rating-stars">{renderRatingStars(rating)}</div>
           <span className="rating-count">({item.reviews || 0})</span>

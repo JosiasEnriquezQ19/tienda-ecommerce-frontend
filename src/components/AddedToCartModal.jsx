@@ -2,30 +2,36 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import './AddedToCartModal.css'
 
-export default function AddedToCartModal({ visible, item, onClose }){
-  if(!visible) return null
+export default function AddedToCartModal({ visible, item, onClose }) {
+  if (!visible) return null
   const nombre = item?.nombre || 'Producto'
   const precio = item?.precio ? `S/ ${Number(item.precio).toFixed(2)}` : ''
   const imagen = item?.imagen || ''
 
   return (
-    <div className="ae-added-modal-backdrop" onClick={onClose}>
-      <div className="ae-added-modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
-        <div className="ae-added-body">
-          <div className="ae-added-image">
-            {imagen ? <img src={imagen} alt={nombre} /> : <div className="ae-placeholder">Imagen</div>}
+    <div className={`ae-added-toast ${visible ? 'show' : ''}`} role="status" aria-live="polite">
+      <div className="ae-added-toast-body">
+        <div className="ae-added-toast-image">
+          {imagen ? <img src={imagen} alt={nombre} /> : <div className="ae-placeholder">📦</div>}
+        </div>
+        <div className="ae-added-toast-content">
+          <div className="ae-added-toast-header">
+            <svg className="ae-success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <h4>¡Agregado al carrito!</h4>
           </div>
-          <div className="ae-added-content">
-            <h3>Producto agregado al carrito</h3>
-            <p className="ae-added-name">{nombre}</p>
-            {precio && <p className="ae-added-price">{precio}</p>}
-            <div className="ae-added-actions">
-              <Link to="/carrito" className="ae-view-cart" onClick={onClose}>Ver carrito</Link>
-              <button className="ae-continue" onClick={onClose}>Seguir comprando</button>
-            </div>
+          <p className="ae-added-toast-name">{nombre}</p>
+          <div className="ae-added-toast-footer">
+            <Link to="/carrito" className="ae-toast-btn ae-toast-btn-primary" onClick={onClose}>
+              Ver carrito
+            </Link>
+            <button className="ae-toast-btn ae-toast-btn-ghost" onClick={onClose}>
+              Seguir
+            </button>
           </div>
         </div>
-        <button className="ae-modal-close" onClick={onClose} aria-label="Cerrar">×</button>
+        <button className="ae-toast-close" onClick={onClose} aria-label="Cerrar">×</button>
       </div>
     </div>
   )

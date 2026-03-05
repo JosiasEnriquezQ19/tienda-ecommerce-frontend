@@ -69,6 +69,7 @@ export default function ListaProductos() {
             nombre: p.nombre ?? p.name,
             descripcion: p.descripcion ?? p.description,
             precio: p.precio ?? p.price ?? 0,
+            precioAntes: p.precioAntes || 0,
             imagenUrl: p.imagenUrl ?? p.url ?? p.image,
             categoria: normalizeCategory(rawCat),
             _rawCategoria: rawCat,
@@ -142,6 +143,8 @@ export default function ListaProductos() {
     case 'newest': productosAMostrar.sort((a, b) => new Date(b.fechaCreacion || 0) - new Date(a.fechaCreacion || 0)); break;
     default: productosAMostrar.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0) || (b.reviews || 0) - (a.reviews || 0));
   }
+  const carouselRef = React.useRef(null);
+
   return (
     <div className="ae-products-page">
       {/* Banner only when no search & no category filter */}
@@ -151,19 +154,24 @@ export default function ListaProductos() {
       {!query && !categoryParam && dbCategories.length > 0 && (
         <section className="mt-categories-section">
           <h2 className="mt-section-title">Nuestras Categorías</h2>
-          <div className="mt-categories-grid">
-            {dbCategories.map(cat => (
-              <Link
-                key={cat.categoriaId}
-                to={`/?category=${encodeURIComponent(cat.nombre)}`}
-                className="mt-category-card"
-              >
-                <img src={cat.imagenUrl || 'https://via.placeholder.com/400x500'} alt={cat.nombre} loading="lazy" />
-                <div className="mt-category-overlay">
-                  <span className="mt-category-label">{cat.nombre}</span>
-                </div>
-              </Link>
-            ))}
+          <div
+            className="mt-categories-carousel"
+            ref={carouselRef}
+          >
+            <div className="mt-categories-grid">
+              {dbCategories.map((cat) => (
+                <Link
+                  key={cat.categoriaId}
+                  to={`/?category=${encodeURIComponent(cat.nombre)}`}
+                  className="mt-category-card"
+                >
+                  <img src={cat.imagenUrl || 'https://via.placeholder.com/400x500'} alt={cat.nombre} loading="lazy" />
+                  <div className="mt-category-overlay">
+                    <span className="mt-category-label">{cat.nombre}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       )}

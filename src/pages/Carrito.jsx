@@ -16,275 +16,166 @@ export default function Carrito() {
   const [direcciones, setDirecciones] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const navigate = useNavigate();
-  
-  const formatPrice = (price) => {
-    const num = Number(price || 0);
-    if (num % 1 === 0) {
-      return num.toLocaleString('es-PE');
-    }
-    return num.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  };
-  
-  // Calcular totales solo de los seleccionados
-  const filteredItems = selectedItems.length > 0 ? items.filter(it => selectedItems.includes(it.uid ?? it.productoId ?? it.servidorId)) : items;
-  const subtotal = filteredItems.reduce((sum, item) => sum + ((Number(item.precio) || 0) * (Number(item.cantidad) || 0)), 0);
-  const distinctCount = filteredItems.length;
-  const totalUnits = filteredItems.reduce((sum, item) => sum + (Number(item.cantidad) || 0), 0);
-  // Impuestos deshabilitados
-  const impuestos = 0;
 
-  // Business rule: if any item has more than 5 units, that item gets 30% off, shipping is free, and customer *earns* a S/400 coupon (for future use).
-  const discountsByItem = filteredItems.map(it => {
+  const fmt = (n) => {
+    const v = Number(n || 0);
+    return v % 1 === 0
+      ? v.toLocaleString('es-PE')
+      : v.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  // Items seleccionados o todos si ninguno marcado
+  const active = selectedItems.length > 0
+    ? items.filter(it => selectedItems.includes(it.uid ?? it.productoId ?? it.servidorId))
+    : items;
+
+  const subtotal = active.reduce((s, i) => s + (Number(i.precio) || 0) * (Number(i.cantidad) || 0), 0);
+  const distinctCount = active.length;
+  const totalUnits = active.reduce((s, i) => s + (Number(i.cantidad) || 0), 0);
+
+  // Descuento por volumen (>5 uds = 30% off en esa línea)
+  const discountsByItem = active.map(it => {
     const qty = Number(it.cantidad || 0);
-    if (qty > 5) {
-      const base = Number(it.precio || 0) * qty;
-      const discount = base * 0.30; // 30% discount on that product line
-      return { productoId: it.productoId, descuento: discount };
-    }
+    if (qty > 5) return { productoId: it.productoId, descuento: Number(it.precio || 0) * qty * 0.30 };
     return { productoId: it.productoId, descuento: 0 };
   });
   const discountTotal = discountsByItem.reduce((s, d) => s + (Number(d.descuento) || 0), 0);
-  const couponEarned = filteredItems.some(it => Number(it.cantidad || 0) > 5);
-  const rewardCouponValue = couponEarned ? 400 : 0;
-
-  // Shipping becomes free if couponEarned OR if subtotal > 100 (legacy rule)
+  const couponEarned = active.some(it => Number(it.cantidad || 0) > 5);
   const envio = (couponEarned || subtotal > 100) ? 0 : 9.99;
-  const total = Math.max(0, subtotal - discountTotal + envio); // No impuestos
-
-  // Procesar pedido
-  async function hacerPedido() {
-    setError(null);
-    
-    // Validaciones
-    if(!user) { 
-      setError('Debes iniciar sesión para realizar el pedido');
-      navigate('/login', { state: { from: '/carrito' } });
-      return;
-    }
-    
-    const userId = user.UsuarioId || user.usuarioId || user.id;
-    if(!userId) { setError('Usuario inválido'); return; }
-  if(filteredItems.length === 0) { setError('Selecciona al menos un producto para comprar'); return; }
-    if(!selectedAddressId) { setError('Selecciona una dirección de envío'); return; }
-
-    setLoading(true);
-    
-    try {
-      // Preparar los items para la creación del pedido
-      const normalizeProductoId = (it) => Number(it.productoId ?? it.productId ?? it.id ?? it.ProductoId);
-      const pedidoItems = filteredItems.map(it => ({ 
-        productoId: normalizeProductoId(it), 
-        cantidad: Number(it.cantidad || 1) 
-      }));
-      
-      console.log("Creando pedido con los siguientes datos:", {
-        usuarioId: userId,
-        direccionId: selectedAddressId,
-        items: pedidoItems
-      });
-      
-      // Obtener el token del usuario
-      const userToken = user?.token || user?.accessToken || user?.jwt || user?.authToken;
-      
-      // Usar nuestra nueva función API optimizada para el controlador
-      const res = await crearPedido(
-        userId, 
-        Number(selectedAddressId), 
-        pedidoItems,
-        userToken
-      );
-
-      // Éxito - eliminar solo los productos seleccionados del carrito
-      for (const it of filteredItems) {
-        removeItem(it.uid ?? it.productoId ?? it.servidorId);
-      }
-  const facturaId = res?.facturaId || res?.factura?.facturaId || res?.factura?.id;
-  const pedidoId = res?.id || res?.pedidoId || res;
-      
-      const resumen = {
-        pedidoId,
-        facturaId,
-        subtotal: Number(subtotal.toFixed(2)),
-        descuento: Number(discountTotal.toFixed(2)),
-        envio: Number(envio.toFixed(2)),
-        total: Number(total.toFixed(2)),
-        couponEarned,
-        rewardCouponValue,
-        items: filteredItems.map(it => ({
-          productoId: it.productoId,
-          nombre: it.nombre || it.name,
-          cantidad: it.cantidad,
-          precio: it.precio
-        })),
-        direccionId: Number(selectedAddressId),
-        descuentosPorItem: discountsByItem
-      };
-      
-  // Redirigir directamente sin mostrar mensaje de agradecimiento
-  try {
-    if (pedidoId) {
-      navigate(`/pedidos/${pedidoId}`, { state: { resumen, success: true } });
-    } else {
-      navigate('/pedidos', { state: { resumen, success: true } });
-    }
-  } catch (navError) {
-    console.error('Error al navegar después de crear el pedido:', navError);
-    // Si hay error al navegar, simplemente quedarse en la página actual
-  }
-    } catch(e) {
-      console.error('Error al crear pedido:', e);
-      const resp = e.response;
-      const body = resp?.data;
-      const msg = resp ? 
-        `${resp.status} ${resp.statusText} - ${typeof body === 'string' ? body : JSON.stringify(body)}` : 
-        e.message;
-      setError(msg);
-    } finally { 
-      setLoading(false); 
-    }
-  }
+  const total = Math.max(0, subtotal - discountTotal + envio);
 
   // Cargar direcciones
   useEffect(() => {
-    async function load() {
-      try {
-        if(!user) return;
-        const userId = user.UsuarioId || user.usuarioId || user.id || DEFAULT_USER_ID;
-        
-        const dirsRes = await axios.get(`${API}/Direcciones/usuario/${userId}`)
-          .catch(e => ({ data: [], status: e?.response?.status }));
-        
-        const dirs = dirsRes?.data || [];
+    if (!user) return;
+    const uid = user.UsuarioId || user.usuarioId || user.id || DEFAULT_USER_ID;
+    axios.get(`${API}/Direcciones/usuario/${uid}`)
+      .then(r => {
+        const dirs = r.data || [];
         setDirecciones(dirs);
-        
-        // Seleccionar primera dirección disponible
-        if(dirs.length && !selectedAddressId) setSelectedAddressId(Number(dirs[0].direccionId ?? dirs[0].id));
-      } catch(err) { 
-        console.warn('Error cargando direcciones:', err); 
-      }
-    }
-    
-    load();
+        if (dirs.length && !selectedAddressId) setSelectedAddressId(Number(dirs[0].direccionId ?? dirs[0].id));
+      })
+      .catch(() => setDirecciones([]));
   }, [user]);
 
-  // Actualizar cantidad de un producto (acepta productoId o servidorId)
-  const handleQuantityChange = (item, newQuantity) => {
+  const handleQty = (item, val) => {
     const stock = Number(item.stock) || 999;
-    const quantity = Math.max(1, Math.min(stock, parseInt(newQuantity) || 1));
-    const id = item.uid ?? item.servidorId ?? item.productoId;
-    updateQuantity(id, quantity);
+    const q = Math.max(1, Math.min(stock, parseInt(val) || 1));
+    updateQuantity(item.uid ?? item.servidorId ?? item.productoId, q);
   };
 
-  // Carrito vacío (ubicado después de los hooks para mantener el orden estable)
-  if(items.length === 0) {
+  async function hacerPedido() {
+    setError(null);
+    if (!user) { setError('Debes iniciar sesión para realizar el pedido'); navigate('/login', { state: { from: '/carrito' } }); return; }
+    const userId = user.UsuarioId || user.usuarioId || user.id;
+    if (!userId) { setError('Usuario inválido'); return; }
+    if (active.length === 0) { setError('Selecciona al menos un producto'); return; }
+    if (!selectedAddressId) { setError('Selecciona una dirección de envío'); return; }
+
+    setLoading(true);
+    try {
+      const pedidoItems = active.map(it => ({
+        productoId: Number(it.productoId ?? it.productId ?? it.id ?? it.ProductoId),
+        cantidad: Number(it.cantidad || 1)
+      }));
+      const token = user?.token || user?.accessToken || user?.jwt || user?.authToken;
+      const res = await crearPedido(userId, Number(selectedAddressId), pedidoItems, token);
+
+      for (const it of active) removeItem(it.uid ?? it.productoId ?? it.servidorId);
+
+      const pedidoId = res?.id || res?.pedidoId || res;
+      const facturaId = res?.facturaId || res?.factura?.facturaId || res?.factura?.id;
+      const resumen = {
+        pedidoId, facturaId,
+        subtotal: +subtotal.toFixed(2), descuento: +discountTotal.toFixed(2),
+        envio: +envio.toFixed(2), total: +total.toFixed(2),
+        couponEarned, rewardCouponValue: couponEarned ? 400 : 0,
+        items: active.map(it => ({ productoId: it.productoId, nombre: it.nombre || it.name, cantidad: it.cantidad, precio: it.precio })),
+        direccionId: Number(selectedAddressId), descuentosPorItem: discountsByItem
+      };
+      if (pedidoId) navigate(`/pedidos/${pedidoId}`, { state: { resumen, success: true } });
+      else navigate('/pedidos', { state: { resumen, success: true } });
+    } catch (e) {
+      const resp = e.response;
+      const body = resp?.data;
+      setError(resp ? `${resp.status} — ${typeof body === 'string' ? body : JSON.stringify(body)}` : e.message);
+    } finally { setLoading(false); }
+  }
+
+  // Vacío
+  if (items.length === 0) {
     return (
-      <div className="ae-empty-cart">
-        <div className="ae-empty-content">
-          <svg className="ae-empty-icon" viewBox="0 0 24 24">
-            <path d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-          </svg>
-          <h2>Tu carrito está vacío</h2>
-          <p>Agrega productos para continuar con tu compra</p>
-          <Link to="/" className="ae-back-to-shop">Volver a la tienda</Link>
+      <div className="ct">
+        <div className="ct-inner">
+          <div className="ct-empty">
+            <svg viewBox="0 0 24 24"><path d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
+            <h2>Tu carrito est&aacute; vac&iacute;o</h2>
+            <p>Agrega productos para empezar tu compra</p>
+            <Link to="/">Ir a la tienda</Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="ae-cart-page">
-      <div className="ae-cart-container">
-        {/* Encabezado */}
-        <div className="ae-cart-header">
-          <h1>Tu Carrito</h1>
-          <div className="ae-cart-summary">
-            {distinctCount} producto(s) • {totalUnits} unidad(es)
-          </div>
+    <div className="ct">
+      <div className="ct-inner">
+
+        {/* Header */}
+        <div className="ct-head">
+          <h1>Carrito de compras</h1>
+          <span>{distinctCount} producto{distinctCount !== 1 ? 's' : ''} &middot; {totalUnits} unidad{totalUnits !== 1 ? 'es' : ''}</span>
         </div>
 
-        {/* Mensaje de error */}
         {error && (
-          <div className="ae-cart-error">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-            </svg>
+          <div className="ct-error">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
             <span>{error}</span>
           </div>
         )}
 
-        {/* Contenido principal */}
-        <div className="ae-cart-content">
-          {/* Lista de productos */}
-          <div className="ae-cart-items">
+        <div className="ct-grid">
+
+          {/* Items */}
+          <div className="ct-items">
             {items.map((item, idx) => {
               const itemId = item.uid ?? item.servidorId ?? item.productoId ?? idx;
-              const isChecked = selectedItems.includes(itemId);
+              const checked = selectedItems.includes(itemId);
+              const lineTotal = (Number(item.precio) || 0) * (Number(item.cantidad) || 1);
               return (
-                <div className="ae-cart-item" key={itemId} style={{position:'relative'}}>
-                  {/* Checkbox en esquina superior izquierda */}
+                <div className="ct-item" key={itemId}>
                   <input
-                    type="checkbox"
-                    className="ae-item-checkbox"
-                    checked={isChecked}
-                    onChange={e => {
-                      setSelectedItems(sel => e.target.checked ? [...sel, itemId] : sel.filter(id => id !== itemId));
-                    }}
+                    type="checkbox" className="ct-check"
+                    checked={checked}
+                    onChange={e => setSelectedItems(s => e.target.checked ? [...s, itemId] : s.filter(id => id !== itemId))}
                   />
-                  <div className="ae-item-image">
-                    <img 
-                      src={item.imagen || item.image || '/placeholder-product.jpg'} 
-                      alt={item.nombre || item.name || ''} 
-                    />
+                  <div className="ct-img">
+                    <img src={item.imagen || item.image || '/placeholder-product.jpg'} alt={item.nombre || ''} />
                   </div>
-                  <div className="ae-item-details">
-                    <div className="ae-item-header" style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                      <h3 
-                        className="ae-item-name" 
-                        style={{margin:0, cursor: 'pointer', color: '#1f2937'}}
+                  <div className="ct-details">
+                    <div className="ct-row-top">
+                      <h3
+                        className="ct-name"
                         onClick={() => navigate(`/producto/${item.productoId ?? item.id ?? item.ProductoId}`)}
                       >
-                        {item.nombre || item.name || `Producto ${item.productoId ?? item.id ?? item.ProductoId}`}
+                        {item.nombre || item.name || `Producto ${item.productoId}`}
                       </h3>
-                      <button 
-                        className="ae-item-remove"
-                        onClick={() => removeItem(itemId)}
-                      >
-                        <svg viewBox="0 0 24 24">
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                        </svg>
+                      <button className="ct-remove" onClick={() => removeItem(itemId)}>
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /></svg>
                       </button>
                     </div>
-                    <div className="ae-item-price">
-                      S/ {formatPrice(item.precio)}
-                    </div>
-                    <div className="ae-item-actions">
-                      <div className="ae-quantity-selector">
-                        <button 
-                          className="ae-quantity-btn"
-                          onClick={() => handleQuantityChange(item, (item.cantidad || 1) - 1)}
-                          disabled={item.cantidad <= 1}
-                        >
-                          -
-                        </button>
+                    <div className="ct-price-unit">S/ {fmt(item.precio)} c/u</div>
+                    <div className="ct-row-bottom">
+                      <div className="ct-qty">
+                        <button onClick={() => handleQty(item, (item.cantidad || 1) - 1)} disabled={item.cantidad <= 1}>−</button>
                         <input
-                          type="number"
-                          min="1"
-                          max={item.stock || 999}
+                          type="number" min="1" max={item.stock || 999}
                           value={item.cantidad || 1}
-                          onChange={(e) => handleQuantityChange(item, e.target.value)}
-                          className="ae-quantity-input"
+                          onChange={e => handleQty(item, e.target.value)}
                         />
-                        <button 
-                          className="ae-quantity-btn"
-                          onClick={() => handleQuantityChange(item, (item.cantidad || 1) + 1)}
-                          disabled={item.cantidad >= (item.stock || 999)}
-                        >
-                          +
-                        </button>
+                        <button onClick={() => handleQty(item, (item.cantidad || 1) + 1)} disabled={item.cantidad >= (item.stock || 999)}>+</button>
                       </div>
-                      <div className="ae-item-total">
-                        S/ {formatPrice((item.precio || 0) * (item.cantidad || 1))}
-                      </div>
+                      <div className="ct-line-total">S/ {fmt(lineTotal)}</div>
                     </div>
                   </div>
                 </div>
@@ -292,95 +183,95 @@ export default function Carrito() {
             })}
           </div>
 
-          {/* Resumen de compra */}
-          <div className="ae-cart-summary">
-            <div className="ae-summary-card">
-              <h3>Resumen de compra</h3>
-              <div className="ae-summary-row">
-                <span>Subtotal</span>
-                <span>S/ {formatPrice(subtotal)}</span>
+          {/* Sidebar */}
+          <div className="ct-sidebar">
+
+            {/* Resumen */}
+            <div className="ct-card">
+              <h3>Resumen del pedido</h3>
+              <div className="ct-row">
+                <span>Subtotal ({totalUnits} items)</span>
+                <span>S/ {fmt(subtotal)}</span>
               </div>
-              <div className="ae-summary-row">
-                <span>Envío</span>
-                <span>{envio === 0 ? 'Gratis' : `S/ ${formatPrice(envio)}`}</span>
+              {discountTotal > 0 && (
+                <div className="ct-row" style={{ color: '#059669' }}>
+                  <span>Descuento por volumen</span>
+                  <span>- S/ {fmt(discountTotal)}</span>
+                </div>
+              )}
+              <div className={`ct-row ${envio === 0 ? 'free' : ''}`}>
+                <span>Env&iacute;o</span>
+                <span>{envio === 0 ? 'Gratis' : `S/ ${fmt(envio)}`}</span>
               </div>
-              {/* Impuestos ocultos porque no aplica facturación electrónica */}
-              {/* <div className="ae-summary-row">
-                <span>Impuestos</span>
-                <span>S/ {formatPrice(impuestos)}</span>
-              </div> */}
-              <div className="ae-summary-divider"></div>
-              <div className="ae-summary-row ae-total">
+              <div className="ct-divider" />
+              <div className="ct-row total">
                 <span>Total</span>
-                <span>S/ {formatPrice(total)}</span>
-              </div>
-              {/* Selección de dirección */}
-              <div className="ae-shipping-section">
-                <h4>Dirección de envío</h4>
-                {direcciones.length ? (
-                  <select 
-                    className="ae-form-select"
-                    value={selectedAddressId ?? ''} 
-                    onChange={e => setSelectedAddressId(Number(e.target.value))}
-                  >
-                    {direcciones.map(dir => (
-                      <option 
-                        key={dir.direccionId ?? dir.id} 
-                        value={dir.direccionId ?? dir.id}
-                      >
-                        {dir.nombre ? `${dir.nombre}: ` : ''}
-                        {dir.calle ? `${dir.calle}, ` : ''}
-                        {dir.ciudad || ''}
-                        {dir.pais ? `, ${dir.pais}` : ''}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <div className="ae-no-address">
-                    <p>No hay direcciones registradas</p>
-                    <Link to="/perfil" className="ae-add-address">
-                      Agregar dirección
-                    </Link>
-                  </div>
-                )}
-              </div>
-              
-              {/* Información de pago */}
-              <div className="ae-payment-section">
-                <h4>Método de pago</h4>
-                <div className="ae-payment-icons" style={{display: "flex", marginBottom: "10px"}}>
-                  <img src="https://logosenvector.com/logo/img/yape-37283.png" alt="Yape" style={{height: "32px", marginRight: "10px"}} />
-                  <img src="https://images.seeklogo.com/logo-png/38/1/plin-logo-png_seeklogo-386806.png" alt="Plin" style={{height: "32px", marginRight: "10px"}} />
-                  <img src="https://cdn-icons-png.flaticon.com/512/4140/4140803.png" alt="transferencia bancaria" style={{height: "32px"}} />
-                </div>
-                <div className="ae-payment-info">
-                  <p>Aceptamos Yape, Plin o transferencia bancaria</p>
-                </div>
-              </div>
-              
-              {/* Botones de acción */}
-              <div className="ae-cart-actions">
-                <Link to="/" className="ae-continue-shopping">
-                  Seguir comprando
-                </Link>
-                <button 
-                  className="ae-checkout-btn"
-                  onClick={hacerPedido}
-                  disabled={loading || !selectedAddressId}
-                >
-                  {loading ? (
-                    <>
-                      <svg className="ae-spinner" viewBox="0 0 50 50">
-                        <circle cx="25" cy="25" r="20" fill="none" strokeWidth="5"></circle>
-                      </svg>
-                      Procesando...
-                    </>
-                  ) : (
-                    'Realizar pedido'
-                  )}
-                </button>
+                <span>S/ {fmt(total)}</span>
               </div>
             </div>
+
+            {/* Dirección */}
+            <div className="ct-card">
+              <h4>Direcci&oacute;n de env&iacute;o</h4>
+              {direcciones.length > 0 ? (
+                <select
+                  className="ct-addr-select"
+                  value={selectedAddressId ?? ''}
+                  onChange={e => setSelectedAddressId(Number(e.target.value))}
+                >
+                  {direcciones.map(d => (
+                    <option key={d.direccionId ?? d.id} value={d.direccionId ?? d.id}>
+                      {d.alias ? `${d.alias}: ` : ''}{d.calle ? `${d.calle}, ` : ''}{d.ciudad || ''}{d.pais ? `, ${d.pais}` : ''}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="ct-no-addr">
+                  <p>No tienes direcciones registradas</p>
+                  <Link to="/perfil?tab=direcciones">Agregar direcci&oacute;n</Link>
+                </div>
+              )}
+            </div>
+
+            {/* Método de pago */}
+            <div className="ct-card">
+              <h4>M&eacute;todo de pago</h4>
+              <div className="ct-pay-icons">
+                <img src="https://logosenvector.com/logo/img/yape-37283.png" alt="Yape" />
+                <img src="https://images.seeklogo.com/logo-png/38/1/plin-logo-png_seeklogo-386806.png" alt="Plin" />
+                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140803.png" alt="Transferencia" />
+              </div>
+              <p className="ct-pay-note">Yape, Plin o transferencia bancaria</p>
+            </div>
+
+            {/* Confianza */}
+            <div className="ct-trust">
+              <div className="ct-trust-row">
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" /></svg>
+                Pago 100% seguro
+              </div>
+              <div className="ct-trust-row">
+                <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+                Env&iacute;o r&aacute;pido y rastreado
+              </div>
+              <div className="ct-trust-row">
+                <svg viewBox="0 0 24 24"><path d="M12.5 6.9c1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-2.06.45-3.72 1.82-3.72 3.84 0 2.48 2.05 3.71 5.03 4.43 2.68.64 3.22 1.58 3.22 2.57 0 1.74-1.66 2.46-3.22 2.46-2.13 0-2.91-.95-3.03-2.1H5.07c.13 2.22 1.78 3.47 3.93 3.89V22h3v-2.15c2.07-.42 3.72-1.69 3.72-3.85 0-3.05-2.6-4.1-5.03-4.8-2.44-.7-3.03-1.45-3.03-2.54 0-1.12 1.05-1.96 2.84-1.96z" /></svg>
+                Devoluci&oacute;n sin costo
+              </div>
+            </div>
+
+            {/* Acciones */}
+            <div className="ct-actions">
+              <button
+                className="ct-btn-checkout"
+                onClick={hacerPedido}
+                disabled={loading || !selectedAddressId}
+              >
+                {loading ? <><div className="ct-spin" /> Procesando...</> : 'Realizar pedido'}
+              </button>
+              <Link to="/" className="ct-btn-continue">Seguir comprando</Link>
+            </div>
+
           </div>
         </div>
       </div>
