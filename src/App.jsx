@@ -44,6 +44,7 @@ export default function App() {
                   <ul className="ae-footer-list">
                     <li><Link to="/">Todos los productos</Link></li>
                     <li><Link to="/mas-vendidos">Mas vendidos</Link></li>
+                    <li><Link to="/mejor-valorados">Mejor valorados</Link></li>
                     <li><Link to="/?category=Tecnologia">Tecnologia</Link></li>
                     <li><Link to="/?category=Celulares">Celulares</Link></li>
                   </ul>

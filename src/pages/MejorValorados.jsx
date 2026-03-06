@@ -5,9 +5,9 @@ import { getComentarios } from '../api/comentariosApi';
 import { useNavigate } from 'react-router-dom';
 import TarjetaProducto from '../components/TarjetaProducto';
 import Banner from '../components/Banner';
-import './MasVendidos.css';
+import './MejorValorados.css';
 
-export default function MasVendidos() {
+export default function MejorValorados() {
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -26,16 +26,18 @@ export default function MasVendidos() {
                     nombre: p.nombre ?? p.name,
                     descripcion: p.descripcion ?? p.description,
                     precio: p.precio ?? p.price ?? 0,
+                    precioAntes: p.precioAntes ?? 0,
                     imagenUrl: p.imagenUrl ?? p.url ?? p.image,
                     categoria: p.categoria ?? p.idCategoria ?? '',
                     destacado: p.destacado ?? p.oferta ?? false,
                     stock: p.stock ?? p.cantidad ?? 0,
+                    marca: p.marca ?? '',
                     rating: p.rating ?? p.puntuacion ?? 0,
                     reviews: p.reviews ?? p.resenas ?? 0,
                     estado: (p.estado ?? 'disponible').toString().toLowerCase(),
                 })).filter(p => p.estado !== 'oculto');
 
-                // Enrich with reviews count
+                // Enrich with real review scores
                 try {
                     const withRatings = await Promise.all(normalized.map(async (p) => {
                         try {
@@ -53,12 +55,18 @@ export default function MasVendidos() {
                             return { ...p, rating: Math.round(avg * 10) / 10, reviews: count };
                         } catch { return p; }
                     }));
-                    // Sort by reviews descending (most sold = most reviewed)
-                    withRatings.sort((a, b) => (b.reviews || 0) - (a.reviews || 0) || (b.rating || 0) - (a.rating || 0));
-                    setProductos(withRatings);
+
+                    // Filter: only products with reviews and rating >= 4.7
+                    const topRated = withRatings
+                        .filter(p => p.reviews > 0 && p.rating >= 4.7)
+                        .sort((a, b) => (b.rating || 0) - (a.rating || 0) || (b.reviews || 0) - (a.reviews || 0));
+
+                    setProductos(topRated);
                 } catch {
-                    normalized.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
-                    setProductos(normalized);
+                    const topRated = normalized
+                        .filter(p => p.reviews > 0 && p.rating >= 4.7)
+                        .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                    setProductos(topRated);
                 }
             } catch (e) {
                 console.error(e);
@@ -71,36 +79,49 @@ export default function MasVendidos() {
     }, []);
 
     return (
-        <div className="mv-page">
-            <div className="mv-hero">
-                <div className="mv-hero-content">
-                    <span className="mv-hero-badge">🔥 Tendencia</span>
-                    <h1 className="mv-hero-title">Más vendidos</h1>
-                    <p className="mv-hero-desc">Descubre los productos más populares que todos están comprando.</p>
+        <div className="mbv-page">
+            <div className="mbv-hero">
+                <div className="mbv-hero-content">
+                    <span className="mbv-hero-badge">⭐ Excelencia</span>
+                    <h1 className="mbv-hero-title">Mejor valorados</h1>
+                    <p className="mbv-hero-desc">
+                        Productos con calificación de 4.7 a 5 estrellas respaldados por reseñas reales de nuestros clientes.
+                    </p>
                 </div>
             </div>
 
             <Banner />
 
-            <div className="mv-container">
+            <div className="mbv-container">
                 {loading ? (
-                    <div className="mv-loading">
-                        <div className="mv-spinner"></div>
+                    <div className="mbv-loading">
+                        <div className="mbv-spinner"></div>
                         <p>Cargando productos...</p>
                     </div>
                 ) : (
                     <>
-                        <div className="mv-stats">
-                            <span className="mv-stats-text">{productos.length} productos ordenados por popularidad</span>
+                        <div className="mbv-stats">
+                            <span className="mbv-stats-text">
+                                {productos.length} producto{productos.length !== 1 ? 's' : ''} con calificación de 4.7★ o superior
+                            </span>
                         </div>
-                        <div className="mv-grid">
-                            {productos.map((p, i) => (
-                                <div key={p.productoId} className="mv-item" style={{ animationDelay: `${i * 0.04}s` }}>
-                                    {i < 3 && <span className="mv-rank">#{i + 1}</span>}
-                                    <TarjetaProducto product={p} onQuickView={() => navigate(`/producto/${p.productoId}`)} />
-                                </div>
-                            ))}
-                        </div>
+
+                        {productos.length === 0 ? (
+                            <div className="mbv-empty">
+                                <div className="mbv-empty-icon">⭐</div>
+                                <h3>Aún no hay productos con esta calificación</h3>
+                                <p>Los productos aparecerán aquí cuando los clientes dejen reseñas con 4.7 estrellas o más.</p>
+                            </div>
+                        ) : (
+                            <div className="mbv-grid">
+                                {productos.map((p, i) => (
+                                    <div key={p.productoId} className="mbv-item" style={{ animationDelay: `${i * 0.04}s` }}>
+                                        <span className="mbv-rating-badge">★ {p.rating}</span>
+                                        <TarjetaProducto product={p} onQuickView={() => navigate(`/producto/${p.productoId}`)} />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </>
                 )}
             </div>
