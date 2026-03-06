@@ -25,10 +25,17 @@ export default function MasVendidos() {
                     productoId: p.productoId ?? p.id,
                     nombre: p.nombre ?? p.name,
                     precio: p.precio ?? p.price ?? 0,
+                    precioAntes: p.precioAntes,
                     imagenUrl: p.imagenUrl ?? p.url ?? p.image,
                     stock: p.stock ?? p.cantidad ?? 0,
                     estado: (p.estado ?? 'disponible').toString().toLowerCase(),
-                })).filter(p => p.estado !== 'oculto');
+                    rating: p.valoracion ?? 0,
+                    reviews: p.numeroRevisiones ?? 0,
+                    ventas: p.ventas ?? 0,
+                    marca: p.marca
+                }))
+                    .filter(p => p.estado !== 'oculto' && p.ventas > 0)
+                    .sort((a, b) => b.ventas - a.ventas);
 
                 setProductos(normalized);
             } catch (e) {

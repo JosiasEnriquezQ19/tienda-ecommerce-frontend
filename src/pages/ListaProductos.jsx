@@ -75,8 +75,8 @@ export default function ListaProductos() {
             _rawCategoria: rawCat,
             destacado: p.destacado ?? p.oferta ?? false,
             stock: p.stock ?? p.cantidad ?? 0,
-            rating: p.rating ?? p.puntuacion ?? 0,
-            reviews: p.reviews ?? p.resenas ?? 0,
+            rating: p.valoracion ?? 0,
+            reviews: p.numeroRevisiones ?? 0,
             estado: rawEstado,
             oculto: rawEstado === 'oculto',
             agotado: rawEstado === 'agotado',
@@ -85,25 +85,7 @@ export default function ListaProductos() {
           };
         });
 
-        try {
-          const withRatings = await Promise.all(normalized.map(async (p) => {
-            try {
-              const comentarios = await getComentarios(p.productoId);
-              const items = Array.isArray(comentarios) ? comentarios : (comentarios.items || []);
-              const getScore = (c) => {
-                for (const k of ['puntuacion', 'puntuacion_estrellas', 'estrellas', 'rating', 'valor', 'score', 'valoracion']) {
-                  if (c[k] != null && c[k] !== '') { const n = Number(c[k]); if (!isNaN(n)) return n; }
-                }
-                return null;
-              };
-              const scores = items.map(getScore).filter(s => s != null && isFinite(s));
-              const count = scores.length;
-              const avg = count ? scores.reduce((s, v) => s + v, 0) / count : (p.rating || 0);
-              return { ...p, rating: Math.round(avg * 10) / 10, reviews: count };
-            } catch { return p; }
-          }));
-          setProductos(withRatings);
-        } catch { setProductos(normalized); }
+        setProductos(normalized);
       } catch (e) {
         if (!cancelled) { setError('Error al cargar los productos: ' + (e.message || e)); }
       } finally {

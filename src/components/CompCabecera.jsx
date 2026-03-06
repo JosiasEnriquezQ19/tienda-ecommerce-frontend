@@ -99,16 +99,13 @@ export default function CompCabecera({ totalProductos = 0 }) {
           // Filter out hidden/discontinued products if necessary, 
           // but usually search should show active ones.
           const visible = res.data.filter(p => p.estado !== 'oculto' && p.estado !== 'descontinuado').slice(0, 6);
-          const withRatings = await Promise.all(visible.map(async (p) => {
-            try {
-              const ratRes = await axios.get(`${API}/productos/${p.productoId}/comentarios/promedio`);
-              return { ...p, rating: ratRes.data.promedio || 0, reviews: ratRes.data.totalComentarios || 0 };
-            } catch {
-              return { ...p, rating: 0, reviews: 0 };
-            }
+          const suggestions = visible.map(p => ({
+            ...p,
+            rating: p.valoracion ?? 0,
+            reviews: p.numeroRevisiones ?? 0
           }));
-          setSuggestions(withRatings);
-          setShowSuggestions(withRatings.length > 0);
+          setSuggestions(suggestions);
+          setShowSuggestions(suggestions.length > 0);
         }
       } catch (e) {
         if (active) setSuggestions([]);

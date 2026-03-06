@@ -32,42 +32,14 @@ export default function MejorValorados() {
                     destacado: p.destacado ?? p.oferta ?? false,
                     stock: p.stock ?? p.cantidad ?? 0,
                     marca: p.marca ?? '',
-                    rating: p.rating ?? p.puntuacion ?? 0,
-                    reviews: p.reviews ?? p.resenas ?? 0,
+                    rating: p.valoracion ?? 0,
+                    reviews: p.numeroRevisiones ?? 0,
                     estado: (p.estado ?? 'disponible').toString().toLowerCase(),
-                })).filter(p => p.estado !== 'oculto');
+                }))
+                    .filter(p => p.estado !== 'oculto' && p.reviews > 0 && p.rating >= 4.7)
+                    .sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
 
-                // Enrich with real review scores
-                try {
-                    const withRatings = await Promise.all(normalized.map(async (p) => {
-                        try {
-                            const comentarios = await getComentarios(p.productoId);
-                            const items = Array.isArray(comentarios) ? comentarios : (comentarios.items || []);
-                            const getScore = (c) => {
-                                for (const k of ['puntuacion', 'puntuacion_estrellas', 'estrellas', 'rating', 'valor', 'score', 'valoracion']) {
-                                    if (c[k] != null && c[k] !== '') { const n = Number(c[k]); if (!isNaN(n)) return n; }
-                                }
-                                return null;
-                            };
-                            const scores = items.map(getScore).filter(s => s != null && isFinite(s));
-                            const count = scores.length;
-                            const avg = count ? scores.reduce((s, v) => s + v, 0) / count : (p.rating || 0);
-                            return { ...p, rating: Math.round(avg * 10) / 10, reviews: count };
-                        } catch { return p; }
-                    }));
-
-                    // Filter: only products with reviews and rating >= 4.7
-                    const topRated = withRatings
-                        .filter(p => p.reviews > 0 && p.rating >= 4.7)
-                        .sort((a, b) => (b.rating || 0) - (a.rating || 0) || (b.reviews || 0) - (a.reviews || 0));
-
-                    setProductos(topRated);
-                } catch {
-                    const topRated = normalized
-                        .filter(p => p.reviews > 0 && p.rating >= 4.7)
-                        .sort((a, b) => (b.rating || 0) - (a.rating || 0));
-                    setProductos(topRated);
-                }
+                setProductos(normalized);
             } catch (e) {
                 console.error(e);
             } finally {
