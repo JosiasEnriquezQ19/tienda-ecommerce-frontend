@@ -90,11 +90,8 @@ export default function CartDrawer({ open, onClose }) {
                             <span>Subtotal</span>
                             <strong>S/ {formatPrice(subtotal)}</strong>
                         </div>
-                        <button className="cd-checkout-btn" onClick={() => { onClose(); navigate('/carrito'); }}>
-                            Ver carrito completo
-                        </button>
-                        <button className="cd-pay-btn" onClick={() => { onClose(); navigate('/pago'); }}>
-                            Ir a pagar
+                        <button className="cd-pay-btn" onClick={() => { onClose(); navigate('/carrito'); }}>
+                            Continuar Compra
                         </button>
                     </div>
                 )}
