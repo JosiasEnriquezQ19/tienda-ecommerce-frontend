@@ -80,16 +80,6 @@ export default function MejorValorados() {
 
     return (
         <div className="mbv-page">
-            <div className="mbv-hero">
-                <div className="mbv-hero-content">
-                    <span className="mbv-hero-badge">⭐ Excelencia</span>
-                    <h1 className="mbv-hero-title">Mejor valorados</h1>
-                    <p className="mbv-hero-desc">
-                        Productos con calificación de 4.7 a 5 estrellas respaldados por reseñas reales de nuestros clientes.
-                    </p>
-                </div>
-            </div>
-
             <Banner />
 
             <div className="mbv-container">
@@ -116,7 +106,6 @@ export default function MejorValorados() {
                             <div className="mbv-grid">
                                 {productos.map((p, i) => (
                                     <div key={p.productoId} className="mbv-item" style={{ animationDelay: `${i * 0.04}s` }}>
-                                        <span className="mbv-rating-badge">★ {p.rating}</span>
                                         <TarjetaProducto product={p} onQuickView={() => navigate(`/producto/${p.productoId}`)} />
                                     </div>
                                 ))}
