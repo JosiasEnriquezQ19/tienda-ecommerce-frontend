@@ -71,23 +71,31 @@ export default function MiTiBot({ open = false, incoming = '', onClose = () => {
     setMessages(m => [...m, { id: tempId, from: 'bot', text: '...', temp: true }]);
 
     try {
-      // First, check local system FAQ/responder
+      // 1. Primero intentamos respuestas locales rápidas (preguntas frecuentes)
       const sys = localSystemAnswer(q);
       if (sys) {
-        // insert the answer immediately replacing the temp id
         setMessages(prev => prev.map(msg => msg.id === tempId ? ({ ...msg, text: sys, temp: false }) : msg));
         return;
       }
 
-      // Si no hay respuesta en el sistema local, usar el fallback
-      const fallbackText = localFallbackAnswer(q);
-      const suggested = tryExtractQuery(fallbackText) || tryExtractQuery(q);
+      // 2. Si no es FAQ, llamamos a Gemini Pro a través de nuestro Backend
+      const res = await axios.post(`${API}/chat/ask`, { message: q });
+      const aiResponse = res.data.response;
+
+      // Intentamos extraer una búsqueda sugerida de la respuesta de la IA o de la pregunta
+      const suggested = tryExtractQuery(aiResponse) || tryExtractQuery(q);
+
       setMessages(prev => prev.map(msg => msg.id === tempId ? ({
         ...msg,
-        text: fallbackText,
+        text: aiResponse,
         temp: false,
-        suggestedQuery: suggested || q // Si no hay query sugerida, usar la pregunta como query
+        suggestedQuery: suggested
       }) : msg));
+
+    } catch (error) {
+      console.error('[miTiBOT-Error]', error);
+      const fallbackText = localFallbackAnswer(q);
+      setMessages(prev => prev.map(msg => msg.id === tempId ? ({ ...msg, text: fallbackText, temp: false }) : msg));
     } finally {
       setAiLoading(false);
     }
