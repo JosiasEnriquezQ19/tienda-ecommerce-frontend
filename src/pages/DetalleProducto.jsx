@@ -10,6 +10,7 @@ import { API } from '../api';
 import { getComentarios, crearComentario } from '../api/comentariosApi';
 import { AuthContext } from '../auth/AuthContext';
 import { CartContext } from '../carrito/ContextoCarrito';
+import TarjetaProducto from '../components/TarjetaProducto';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 import './DetalleProducto.css';
@@ -58,14 +59,32 @@ export default function DetalleProducto() {
         const { data } = await axios.get(`${API}/Productos/${pid}`);
         if (off) return;
         setProducto(data);
-        setSelectedImg(0);
         // Related
-        const cat = data.categoriaId || data.categoria;
-        if (cat) {
+        const catId = data.categoriaId;
+        if (catId) {
           try {
-            const r = await axios.get(`${API}/Productos?categoriaId=${cat}`);
-            setRelated((r.data || []).filter(p => (p.productoId || p.id) != pid).slice(0, 4));
-          } catch { }
+            // Buscamos productos de la misma categoría. 
+            // La API de productos suele devolver un objeto paginado o un array según la versión.
+            const r = await axios.get(`${API}/Productos?categoriaId=${catId}&pageSize=10`);
+            const relatedData = r.data?.items || (Array.isArray(r.data) ? r.data : []);
+
+            const filtered = relatedData
+              .filter(p => (p.productoId ?? p.id) != pid && p.estado !== 'oculto')
+              .map(p => ({
+                productoId: p.productoId ?? p.id,
+                id: p.productoId ?? p.id,
+                nombre: p.nombre,
+                precio: p.precio,
+                precioAntes: p.precioAntes,
+                imagenUrl: p.imagenUrl,
+                rating: p.valoracion ?? 0,
+                reviews: p.numeroRevisiones ?? 0,
+                estado: p.estado
+              }))
+              .slice(0, 4);
+
+            setRelated(filtered);
+          } catch (e) { console.error("Error fetching related:", e); }
         }
       } catch (e) {
         if (!off) {
@@ -354,60 +373,18 @@ export default function DetalleProducto() {
         {/* ── RELACIONADOS ── */}
         {related.length > 0 && (
           <section className="dp-related">
-            <h2>También te podría gustar</h2>
+            <h2 className="dp-related-title">Productos que podrían interesarte</h2>
             <div className="dp-related-grid">
-              {related.map(r => {
-                const rid = r.productoId || r.id;
-                const rImg = r.imagenUrl || (r.imagenes && r.imagenes[0]) || '';
-                const rPrecio = r.precio || 0;
-                const rPrecioAntes = r.precioAntes || 0;
-                const rDescuento = rPrecioAntes > rPrecio ? Math.round(((rPrecioAntes - rPrecio) / rPrecioAntes) * 100) : 0;
-
-                return (
-                  <Link key={rid} to={`/producto/${rid}`} className="dp-related-card" onClick={() => window.scrollTo(0, 0)}>
-                    <div className="dp-related-img" style={{ background: '#fff', position: 'relative' }}>
-                      {rDescuento > 0 && (
-                        <span style={{
-                          position: 'absolute', top: '8px', left: '8px',
-                          background: '#1a56db', color: '#fff', fontSize: '10px',
-                          fontWeight: 800, padding: '3px 7px', borderRadius: '5px'
-                        }}>
-                          -{rDescuento}%
-                        </span>
-                      )}
-                      <img src={rImg} alt={r.nombre} />
-                    </div>
-                    <h4 style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      margin: '0 0 4px',
-                      lineHeight: 1.4,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      height: '2.8em',
-                      color: '#0f172a'
-                    }}>
-                      {r.nombre}
-                    </h4>
-                    <div className="dp-stars" style={{
-                      fontSize: '10px',
-                      marginBottom: '4px',
-                      display: (r.numeroRevisiones > 0 || r.valoracion > 0) ? 'flex' : 'none',
-                      gap: '2px',
-                      alignItems: 'center'
-                    }}>
-                      {stars(r.valoracion || 0)}
-                      {r.numeroRevisiones > 0 && <span style={{ color: '#94a3b8', fontSize: '9px', marginLeft: '2px' }}>({r.numeroRevisiones})</span>}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: '#1a56db' }}>S/ {rPrecio.toFixed(2)}</span>
-                    </div>
-                  </Link>
-                );
-              })}
+              {related.map(prod => (
+                <TarjetaProducto
+                  key={prod.id}
+                  product={prod}
+                  onQuickView={() => {
+                    navigate(`/producto/${prod.id}`);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
+              ))}
             </div>
           </section>
         )}
