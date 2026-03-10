@@ -36,7 +36,7 @@ export default function MejorValorados() {
                     reviews: p.numeroRevisiones ?? 0,
                     estado: (p.estado ?? 'disponible').toString().toLowerCase(),
                 }))
-                    .filter(p => p.estado !== 'oculto' && p.reviews > 0 && p.rating >= 4.7)
+                    .filter(p => p.estado !== 'oculto' && p.reviews > 0 && p.rating >= 4.5)
                     .sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
 
                 setProductos(normalized);
@@ -64,7 +64,7 @@ export default function MejorValorados() {
                     <>
                         <div className="mbv-stats">
                             <span className="mbv-stats-text">
-                                {productos.length} producto{productos.length !== 1 ? 's' : ''} con calificación de 4.7★ o superior
+                                {productos.length} producto{productos.length !== 1 ? 's' : ''} con calificación de 4.5★ o superior
                             </span>
                         </div>
 
@@ -72,7 +72,7 @@ export default function MejorValorados() {
                             <div className="mbv-empty">
                                 <div className="mbv-empty-icon">⭐</div>
                                 <h3>Aún no hay productos con esta calificación</h3>
-                                <p>Los productos aparecerán aquí cuando los clientes dejen reseñas con 4.7 estrellas o más.</p>
+                                <p>Los productos aparecerán aquí cuando los clientes dejen reseñas con 4.5 estrellas o más.</p>
                             </div>
                         ) : (
                             <div className="mbv-grid">

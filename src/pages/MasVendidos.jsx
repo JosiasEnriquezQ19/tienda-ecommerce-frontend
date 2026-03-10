@@ -34,7 +34,7 @@ export default function MasVendidos() {
                     ventas: p.ventas ?? 0,
                     marca: p.marca
                 }))
-                    .filter(p => p.estado !== 'oculto' && p.ventas > 0)
+                    .filter(p => p.estado !== 'oculto' && p.ventas >= 10)
                     .sort((a, b) => b.ventas - a.ventas);
 
                 setProductos(normalized);
