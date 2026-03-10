@@ -95,6 +95,29 @@ export default function ListaProductos() {
     <div className="ae-products-page">
       {!query && !categoryParam && <Banner />}
 
+      {/* Sección de Categorías — Restaurada */}
+      {!query && !categoryParam && dbCategories.length > 0 && (
+        <section className="mt-categories-section">
+          <h2 className="mt-section-title">Nuestras Categorías</h2>
+          <div className="mt-categories-carousel" ref={carouselRef}>
+            <div className="mt-categories-grid">
+              {dbCategories.map(cat => (
+                <Link
+                  key={cat.categoriaId}
+                  to={`/?category=${encodeURIComponent(cat.nombre)}`}
+                  className="mt-category-card"
+                >
+                  <img src={cat.imagenUrl || 'https://via.placeholder.com/240'} alt={cat.nombre} />
+                  <div className="mt-category-overlay">
+                    <span className="mt-category-label">{cat.nombre}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <div className="ae-products-container">
         <main className="ae-products-main ae-products-main-full">
           <div className="ae-products-header">
