@@ -79,7 +79,8 @@ export default function DetalleProducto() {
                 imagenUrl: p.imagenUrl,
                 rating: p.valoracion ?? 0,
                 reviews: p.numeroRevisiones ?? 0,
-                estado: p.estado
+                estado: p.estado,
+                stock: p.stock ?? 0
               }))
               .slice(0, 4);
 
