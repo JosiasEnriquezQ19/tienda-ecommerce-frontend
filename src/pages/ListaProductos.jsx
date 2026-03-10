@@ -49,6 +49,8 @@ export default function ListaProductos() {
       try {
         const params = new URLSearchParams();
         if (query) params.append('search', query);
+        if (categoryParam) params.append('categoriaNombre', categoryParam);
+        params.append('estado', 'disponible');
         params.append('page', page);
         params.append('pageSize', pageSize);
 
@@ -82,12 +84,9 @@ export default function ListaProductos() {
     fetchProducts();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     return () => cancelled = true;
-  }, [query, page]);
+  }, [query, categoryParam, page]);
 
-  let productosAMostrar = productos.filter(p => p.estado !== 'oculto');
-  if (categoryParam) {
-    productosAMostrar = productosAMostrar.filter(p => p.categoria.toLowerCase() === categoryParam.toLowerCase());
-  }
+  let productosAMostrar = productos; // Ya viene filtrado por estado y categoría desde el backend
 
   const carouselRef = React.useRef(null);
 
