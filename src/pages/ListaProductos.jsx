@@ -69,7 +69,9 @@ export default function ListaProductos() {
           imagenUrl: p.imagenUrl ?? p.url ?? p.image,
           categoria: normalizeCategory(p.categoriaNombre || p.categoria?.nombre),
           stock: p.stock ?? 0,
-          estado: (p.estado || '').toLowerCase()
+          estado: (p.estado || '').toLowerCase(),
+          rating: p.valoracion ?? 0,
+          reviews: p.numeroRevisiones ?? 0
         }));
 
         setProductos(normalized);
