@@ -17,7 +17,8 @@ export default function MejorValorados() {
 
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${API}/Productos`);
+                // Pedimos 100 para asegurarnos de captar los mejor valorados que no estén en la primera página
+                const response = await axios.get(`${API}/Productos?pageSize=100`);
                 if (cancelled) return;
 
                 const data = Array.isArray(response.data) ? response.data : (response.data?.items || []);
