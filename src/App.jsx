@@ -1,12 +1,61 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { CartProvider } from './carrito/ContextoCarrito';
 import { SearchProvider } from './search/SearchContext';
 import CompCabecera from './components/CompCabecera';
 import ChatLauncher from './components/ChatLauncher';
 import logoImg from './assets/logo-ecommerce.png';
+import API_BASE from './api';
+
 
 export default function App() {
+  
+  useEffect(() => {
+    const fetchSEO = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/Configuraciones`);
+        if (res.ok) {
+          const data = await res.json();
+          let title = '';
+          let desc = '';
+          let keywords = '';
+          
+          data.forEach(item => {
+            if (item.clave === 'SEO_TITLE') title = item.valor;
+            if (item.clave === 'SEO_DESCRIPTION') desc = item.valor;
+            if (item.clave === 'SEO_KEYWORDS') keywords = item.valor;
+          });
+
+          if (title) document.title = title;
+          
+          if (desc) {
+            let metaDesc = document.querySelector('meta[name="description"]');
+            if (!metaDesc) {
+              metaDesc = document.createElement('meta');
+              metaDesc.name = 'description';
+              document.head.appendChild(metaDesc);
+            }
+            metaDesc.content = desc;
+          }
+
+          if (keywords) {
+            let metaKeywords = document.querySelector('meta[name="keywords"]');
+            if (!metaKeywords) {
+              metaKeywords = document.createElement('meta');
+              metaKeywords.name = 'keywords';
+              document.head.appendChild(metaKeywords);
+            }
+            metaKeywords.content = keywords;
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching SEO config', err);
+      }
+    };
+    
+    fetchSEO();
+  }, []);
+
   return (
     <CartProvider>
       <SearchProvider>
