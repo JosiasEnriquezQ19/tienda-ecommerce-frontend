@@ -5,7 +5,7 @@ import { SearchProvider } from './search/SearchContext';
 import CompCabecera from './components/CompCabecera';
 import ChatLauncher from './components/ChatLauncher';
 import logoImg from './assets/logo-ecommerce.png';
-import API_BASE from './api';
+import { API as API_BASE } from './api';
 
 
 export default function App() {
