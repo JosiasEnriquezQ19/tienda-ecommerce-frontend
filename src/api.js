@@ -1,6 +1,6 @@
 // Usamos VITE_API_BASE como prioridad (para Vercel/Producción), 
 // y configuramos tu URL actual como respaldo por defecto.
-export const API = import.meta.env.VITE_API_BASE || 'http://mapelectric-peru.duckdns.org:8082/api';
+export const API = import.meta.env.VITE_API_BASE || 'https://mapelectric-peru.duckdns.org/api2';
 
 // Cuando los usuarios del backend fueron reseedeados, los IDs válidos de prueba son 1..5
 export const DEFAULT_USER_ID = Number(import.meta.env.VITE_DEFAULT_USER_ID || 1);

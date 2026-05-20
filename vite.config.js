@@ -8,11 +8,11 @@ export default defineConfig({
     port: 3000,
     strictPort: false, // Try next available port if 3000 is in use
     proxy: {
-      '/api': {
-        target: 'http://mapelectric-peru.duckdns.org:8082',
+      '/api2': {
+        target: 'https://mapelectric-peru.duckdns.org',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path // Keep /api in the path
+        secure: true,
+        rewrite: (path) => path // Keep /api2 in the path
       }
     },
     headers: {
