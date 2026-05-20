@@ -9,7 +9,7 @@ export default defineConfig({
     strictPort: false, // Try next available port if 3000 is in use
     proxy: {
       '/api': {
-        target: 'http://localhost:5184',
+        target: 'http://mapelectric-peru.duckdns.org:8082',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path // Keep /api in the path
