@@ -6,7 +6,8 @@ import { cloudflare } from '@cloudflare/vite-plugin'
 export default defineConfig({
   plugins: [
     ...(process.env.CF_PAGES || process.env.CF_PAGES_URL ? [cloudflare()] : []),
-    react()
+    react(),
+    cloudflare()
   ],
   server: {
     port: 3000,
